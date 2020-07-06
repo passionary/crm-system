@@ -66,8 +66,11 @@ export const Home = (props: any) => {
     var elems = document.querySelectorAll(".dropdown-trigger");
     M.Dropdown.init(elems, {});
   }, []);
+  const [open, setOpen] = useState(true)
 
   const [logout, setLogout] = useState(false);
+
+  const [full, setFull] = useState(false)
 
   const logoutHandler = (
     e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
@@ -77,8 +80,23 @@ export const Home = (props: any) => {
     props.logout();
     setLogout(true);
   };
-  console.log(props);
+  const navbarClasses:string[] = [
+    'sidenav','app-sidenav'
+  ]
+  const appContentClasses:string[] = [
+    'app-content'
+  ]
+
+  if(open) navbarClasses.push('open')
+  if(full) appContentClasses.push('full')
+  console.log(navbarClasses,appContentClasses);
   
+  const menuOpenHandler = (e:React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.preventDefault()
+
+    setOpen(!open)
+    setFull(!full)
+  }  
   if (logout) return <Preview />;
   return (
     <div>
@@ -86,7 +104,7 @@ export const Home = (props: any) => {
         <nav className="navbar orange lighten-1">
           <div className="nav-wrapper">
             <div className="navbar-left">
-              <a href="/">
+              <a href="/" onClick={menuOpenHandler}>
                 <i className="material-icons black-text">dehaze</i>
               </a>
               <span className="black-text">12.12.12</span>
@@ -121,7 +139,7 @@ export const Home = (props: any) => {
           </div>
         </nav>
 
-        <ul className="sidenav app-sidenav open">
+        <ul className={navbarClasses.join(" ")}>
           {links.map((link: ILink, index:number) => (
             <li className={props.location.pathname === link.to ? 'active' : ''} key={index}>
               <NavLink
@@ -132,7 +150,7 @@ export const Home = (props: any) => {
             </li>
           ))}
         </ul>
-        <main className="app-content">
+        <main className={appContentClasses.join(" ")}>
           <div className="app-page">
             <div>
               <Switch>

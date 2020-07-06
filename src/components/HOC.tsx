@@ -1,27 +1,26 @@
 import React from "react";
 import { getCookie } from "../cookie";
 import { connect } from "react-redux";
-import { Todos } from "./Todos";
 import { Home } from "./Home";
 import { Preview } from "./Preview";
+import { Loader } from "./Loader";
 
-interface IComponents {
-  [key: string]: any;
-}
-const components: IComponents = {
-  Todos: (props:any) => <Todos {...props} />,
-  Home: (props:any) => <Home {...props} />,
-};
+// interface IComponents {
+//   [key: string]: any;
+// }
+// const components: IComponents = {
+//   Home: (props:any) => <Home {...props} />,
+// };
 interface IState {
   logout: boolean;
 }
 
 interface IProps {
   toLoad: string;
-  children?:any;
+  children?: any;
   token?: string;
   logout?: any;
-  isLoading?:boolean;
+  isLoading?: boolean;
   loading?: any;
   breakLoader?: any;
   setToken?: any;
@@ -32,48 +31,34 @@ class HOComponent extends React.Component<IProps, IState> {
     logout: false,
   };
 
-  constructor(props: any) {            
+  constructor(props: any) {
     super(props);
   }
 
-  render() {    
+  render() {
     if (this.state.logout) {
-      return <Preview />
+      return <Preview />;
     }
-    if(this.props.isLoading) {
-      return (
-        <div className="lds-dual-ring"></div>
-      )
+    if (this.props.isLoading) {
+      return <Loader />;
     }
-    if(this.props.token === getCookie("token")) {
-      if(this.props.toLoad === 'Home') {
-        return (
-          <Home>
-            {this.props.children}
-          </Home>
-        )        
-      }
-      return (
-        <>
-          {/* <button onClick={() => this.logout()}>logout</button> */}
-          {components[this.props.toLoad](this.props)}
-        </>
-      )
-    }else {
-      return (
-        <Preview />
-      );
-    }    
+    if (this.props.token === getCookie("token")) {
+      return <Home {...this.props} />;
+    } else {
+      return <Preview />;
+    }
   }
   componentWillMount() {
-    this.props.loading()
+    this.props.loading();
   }
-  componentDidMount() {    
+  componentDidMount() {
     fetch(`http://127.0.0.1:8000/api/token?token=${getCookie("token")}`)
       .then((res) => res.json())
       .then((data) => {
-        this.props.breakLoader()
-        
+        setTimeout(() => {
+          this.props.breakLoader();
+        }, 1000);
+
         if (data && data.token) {
           this.props.setToken(data.token);
         }
@@ -89,22 +74,22 @@ interface IMap {
   logout: any;
   setToken: any;
   loading: any;
-  breakLoader:any;
+  breakLoader: any;
 }
 const breakLoader = () => {
   return (dispatch: any) => {
     dispatch({
-      type: 'break-loading'
-    })
-  }
-}
+      type: "break-loading",
+    });
+  };
+};
 const loading = () => {
   return (dispatch: any) => {
     dispatch({
-      type: 'loading'
-    })
-  }
-}
+      type: "loading",
+    });
+  };
+};
 function logout() {
   return async (dispatch: any) => {
     try {
@@ -132,7 +117,7 @@ const mapDispatchToProps: IMap = {
   logout,
   setToken,
   loading,
-  breakLoader
+  breakLoader,
 };
 const mapStateToProps = (state: any) => ({
   ...state,

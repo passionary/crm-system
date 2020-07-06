@@ -1,13 +1,32 @@
-import React, { useEffect } from "react";
-import { NavLink, Switch, Route, BrowserRouter } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { NavLink, Switch, Route, Redirect } from "react-router-dom";
 import { Bill } from "./Bill";
 import { Categories } from "./Categories";
+import { History } from "./History";
+import { Planning } from "./Planning";
+import { Record } from "./Record";
+import { prependOnceListener } from "process";
+import { Preview } from "./Preview";
+import { link } from "fs";
+import { Profile } from "./Profile";
 
 interface IRoute {
   path: string;
   exact: boolean;
   component: any;
 }
+
+interface ILink {
+  to: string;
+  innerText: string;
+}
+const links: ILink[] = [
+  { to: "/", innerText: 'Счет'},
+  { to: "/history", innerText: 'История' },
+  { to: "/planning", innerText: 'Планирование'},
+  { to: "/new-record", innerText: 'Новая запись' },
+  { to: "/categories" , innerText: 'Категории'},
+];
 
 const routes: IRoute[] = [
   {
@@ -16,19 +35,51 @@ const routes: IRoute[] = [
     component: Bill,
   },
   {
+    path: "/history",
+    exact: true,
+    component: History,
+  },
+  {
+    path: "/planning",
+    exact: true,
+    component: Planning,
+  },
+  {
+    path: "/new-record",
+    exact: true,
+    component: Record,
+  },
+  {
     path: "/categories",
     exact: true,
     component: Categories,
   },
+  {
+    path: "/profile",
+    exact: true,
+    component: Profile,
+  },
 ];
 
-export const Home = ({match,children}:any) => {
-  console.log(children);
-  
+export const Home = (props: any) => {
   useEffect(() => {
     var elems = document.querySelectorAll(".dropdown-trigger");
     M.Dropdown.init(elems, {});
   }, []);
+
+  const [logout, setLogout] = useState(false);
+
+  const logoutHandler = (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+
+    props.logout();
+    setLogout(true);
+  };
+  console.log(props);
+  
+  if (logout) return <Preview />;
   return (
     <div>
       <div className="app-main-layout">
@@ -54,13 +105,13 @@ export const Home = ({match,children}:any) => {
 
                 <ul id="dropdown" className="dropdown-content">
                   <li>
-                    <a href="/" className="black-text">
+                    <NavLink to="/profile" className="black-text">
                       <i className="material-icons">account_circle</i>Профиль
-                    </a>
+                    </NavLink>
                   </li>
                   <li className="divider" tabIndex={-1}></li>
                   <li>
-                    <a href="/" className="black-text">
+                    <a href="/" onClick={logoutHandler} className="black-text">
                       <i className="material-icons">assignment_return</i>Выйти
                     </a>
                   </li>
@@ -71,40 +122,24 @@ export const Home = ({match,children}:any) => {
         </nav>
 
         <ul className="sidenav app-sidenav open">
-          <li>
-            <NavLink
-              to="/some"
-              className="waves-effect waves-orange pointer"
-            >
-              Счет
-            </NavLink>
-          </li>
-          <li>
-            <a href="/" className="waves-effect waves-orange pointer">
-              История
-            </a>
-          </li>
-          <li>
-            <a href="/" className="waves-effect waves-orange pointer">
-              Планирование
-            </a>
-          </li>
-          <li>
-            <a href="/" className="waves-effect waves-orange pointer">
-              Новая запись
-            </a>
-          </li>
-          <li>
-            <a href="/" className="waves-effect waves-orange pointer">
-              Категории
-            </a>
-          </li>
+          {links.map((link: ILink, index:number) => (
+            <li className={props.location.pathname === link.to ? 'active' : ''} key={index}>
+              <NavLink
+                to={link.to}                
+                className="waves-effect waves-orange pointer"
+                key={index + '-nav-link'}
+          >{link.innerText}</NavLink>
+            </li>
+          ))}
         </ul>
         <main className="app-content">
           <div className="app-page">
             <div>
-              <Route path="/" exact component={Bill}></Route>
-              <Route path="/categories" exact component={Categories}></Route>              
+              <Switch>
+                {routes.map((route: IRoute, index: number) => (
+                  <Route {...route} key={index} />
+                ))}
+              </Switch>
             </div>
           </div>
         </main>

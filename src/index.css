@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 .lds-dual-ring {
   display: inline-block;
   width: 80px;
@@ -25,18 +24,3 @@
     transform: rotate(360deg);
   }
 }
-=======
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
->>>>>>> e0f89170dff081c42113e6cc51bc3eeb9f483094

@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import Login from "./Login";
-import { Register } from './Register'
+import Register from './Register'
 import HOComponent from "./HOC";
 
 function RouterView(props: any) {

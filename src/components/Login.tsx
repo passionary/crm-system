@@ -1,16 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "materialize-css/dist/js/materialize.min.js";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 
 const Login = (props: any) => {
   const [auth, setAuth] = useState(false);
-
+  let email = useRef<HTMLInputElement>(null);
+  let password = useRef<HTMLInputElement>(null);
+  const [emailClasses, setEmailClass] = useState(["validate"]);
+  const [passwordClasses, setPasswordClass] = useState(["validate"]);
   useEffect(() => {
     M.updateTextFields();
   }, []);
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!/[0-9a-z]+@[a-z]/.test(email.current!.value)) {
+      setEmailClass([...emailClasses, "invalid"]);
+      return false;
+    }
+    setEmailClass(["validate"]);
+    if (password.current!.value.length < 3) {
+      setPasswordClass([...passwordClasses, "invalid"]);
+      return false;
+    }
+    setPasswordClass(["validate"]);
+
     const form = document.querySelector("#form");
 
     if (!form) return;
@@ -19,13 +34,15 @@ const Login = (props: any) => {
       body: new FormData(form as HTMLFormElement),
     })
       .then((res) => res.json())
-      .then((res) => {        
+      .then((res) => {
         if (res.token) {
           props.auth(res.token);
           setAuth(true);
         }
       });
   };
+  console.log(emailClasses, passwordClasses);
+
   if (auth) return <Redirect to="/" />;
   return (
     <div>
@@ -34,14 +51,30 @@ const Login = (props: any) => {
           <div className="card-content">
             <span className="card-title">Домашняя бухгалтерия</span>
             <div className="input-field">
-              <input id="email" name="email" type="text" className="validate" />
+              <input
+                ref={email}
+                id="email"
+                name="email"
+                type="text"
+                className={emailClasses.join(" ")}
+              />
               <label htmlFor="email">Email</label>
-              <small className="helper-text invalid">Email</small>
+              {emailClasses.includes("invalid") && (
+                <small className="helper-text invalid">Email</small>
+              )}
             </div>
             <div className="input-field">
-              <input id="password" name="password" type="password" className="validate" />
+              <input
+                ref={password}
+                id="password"
+                name="password"
+                type="password"
+                className={passwordClasses.join(" ")}
+              />
               <label htmlFor="password">Пароль</label>
-              <small className="helper-text invalid">Password</small>
+              {passwordClasses.includes("invalid") && (
+                <small className="helper-text invalid">Password</small>
+              )}
             </div>
           </div>
           <div className="card-action">

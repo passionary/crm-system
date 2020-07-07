@@ -1,26 +1,99 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
 
-export const Register = () => {
+const Register = (props: any) => {
+  const [auth, setAuth] = useState(false);
+  let email = useRef<HTMLInputElement>(null);
+  let password = useRef<HTMLInputElement>(null);
+  let name = useRef<HTMLInputElement>(null);
+  const [emailClasses, setEmailClass] = useState(["validate"]);
+  const [passwordClasses, setPasswordClass] = useState(["validate"]);
+  const [nameClasses, setnameClass] = useState(["validate"]);
+
+  useEffect(() => {
+    M.updateTextFields();
+  }, []);
+
+  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!/[0-9a-z]+@[a-z]/.test(email.current!.value)) {
+      setEmailClass([...emailClasses, "invalid"]);
+      return false;
+    }
+    setEmailClass(["validate"]);
+    if (password.current!.value.length < 3) {
+      setPasswordClass([...passwordClasses, "invalid"]);
+      return false;
+    }    
+    setPasswordClass(["validate"]);    
+
+    if (name.current!.value.length < 3) {
+      setnameClass([...nameClasses, "invalid"]);
+      return false;
+    }
+    setnameClass(['validate']);
+    const form = document.querySelector("#form");
+
+    if (!form) return;
+    fetch("http://127.0.0.1:8000/api/registr", {
+      method: "POST",
+      body: new FormData(form as HTMLFormElement),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.token) {
+          props.auth(res.token);
+          setAuth(true);
+        }
+      });
+  };
+  if (auth) return <Redirect to="/" />;
   return (
     <div>
       <div className="grey darken-1 empty-layout">
-        <form className="card auth-card">
+        <form className="card auth-card" onSubmit={submitHandler} id="form">
           <div className="card-content">
             <span className="card-title">Домашняя бухгалтерия</span>
             <div className="input-field">
-              <input id="email" type="text" />
+              <input
+                id="email"
+                name="email"
+                type="text"
+                className={emailClasses.join(" ")}
+                ref={email}
+              />
               <label htmlFor="email">Email</label>
-              <small className="helper-text invalid">Email</small>
+              {emailClasses.includes("invalid") && (
+                <small className="helper-text invalid">Email</small>
+              )}
             </div>
             <div className="input-field">
-              <input id="password" type="password" className="validate" />
+              <input
+                name="password"
+                id="password"
+                type="password"
+                className={passwordClasses.join(" ")}
+                ref={password}
+              />
               <label htmlFor="password">Пароль</label>
-              <small className="helper-text invalid">Password</small>
+              {passwordClasses.includes("invalid") && (
+                <small className="helper-text invalid">Password</small>
+              )}
             </div>
             <div className="input-field">
-              <input id="name" type="text" className="validate" />
+              <input
+                name="name"
+                id="name"
+                type="text"
+                className={nameClasses.join(" ")}
+                ref={name}
+              />
               <label htmlFor="name">Имя</label>
-              <small className="helper-text invalid">Name</small>
+              {nameClasses.includes("invalid") && (
+                <small className="helper-text invalid">Name</small>
+              )}
             </div>
             <p>
               <label>
@@ -50,3 +123,15 @@ export const Register = () => {
     </div>
   );
 };
+
+const auth = (token: string) => {
+  return {
+    type: "auth",
+    payload: token,
+  };
+};
+const mapDispatchToProps = {
+  auth,
+};
+
+export default connect(null, mapDispatchToProps)(Register);

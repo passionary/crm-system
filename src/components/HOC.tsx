@@ -55,6 +55,7 @@ class HOComponent extends React.Component<IProps, IState> {
     fetch(`http://127.0.0.1:8000/api/token?token=${getCookie("token")}`)
       .then((res) => res.json())
       .then((data) => {
+        
         setTimeout(() => {
           this.props.breakLoader();
         }, 1000);
@@ -62,7 +63,13 @@ class HOComponent extends React.Component<IProps, IState> {
         if (data && data.token) {
           this.props.setToken(data.token);
         }
-      });
+      })
+      .catch(e => {
+        this.props.breakLoader();
+      })
+  }
+  componentWillUnmount() {
+    console.log("some");
   }
   logout() {
     this.setState({ logout: true });

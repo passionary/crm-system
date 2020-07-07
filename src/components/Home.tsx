@@ -5,10 +5,9 @@ import { Categories } from "./Categories";
 import { History } from "./History";
 import { Planning } from "./Planning";
 import { Record } from "./Record";
-import { prependOnceListener } from "process";
 import { Preview } from "./Preview";
-import { link } from "fs";
 import { Profile } from "./Profile";
+import { getCookie } from "../cookie";
 
 interface IRoute {
   path: string;
@@ -21,11 +20,11 @@ interface ILink {
   innerText: string;
 }
 const links: ILink[] = [
-  { to: "/", innerText: 'Счет'},
-  { to: "/history", innerText: 'История' },
-  { to: "/planning", innerText: 'Планирование'},
-  { to: "/new-record", innerText: 'Новая запись' },
-  { to: "/categories" , innerText: 'Категории'},
+  { to: "/", innerText: "Счет" },
+  { to: "/history", innerText: "История" },
+  { to: "/planning", innerText: "Планирование" },
+  { to: "/new-record", innerText: "Новая запись" },
+  { to: "/categories", innerText: "Категории" },
 ];
 
 const routes: IRoute[] = [
@@ -60,17 +59,40 @@ const routes: IRoute[] = [
     component: Profile,
   },
 ];
-
 export const Home = (props: any) => {
+  let interval: any;
+  
+  const dateOptions = {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  }
+
+  const [date, setDate] = useState(new Intl.DateTimeFormat('ru-RU',dateOptions).format(new Date()));
+  const [user, setUser] = useState()
   useEffect(() => {
     var elems = document.querySelectorAll(".dropdown-trigger");
     M.Dropdown.init(elems, {});
+    // interval = setInterval(() => {
+    //   setDate(new Intl.DateTimeFormat('ru-RU',dateOptions).format(new Date()))
+    // },1000);
+    fetch(`http://127.0.0.1:8000/api/user?token=${getCookie('token')}`)
+    .then(res => res.json())
+    .then(res => {
+      setUser(res)      
+    })
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(true);
 
   const [logout, setLogout] = useState(false);
 
-  const [full, setFull] = useState(false)
+  const [full, setFull] = useState(false);
 
   const logoutHandler = (
     e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
@@ -80,23 +102,20 @@ export const Home = (props: any) => {
     props.logout();
     setLogout(true);
   };
-  const navbarClasses:string[] = [
-    'sidenav','app-sidenav'
-  ]
-  const appContentClasses:string[] = [
-    'app-content'
-  ]
+  const navbarClasses: string[] = ["sidenav", "app-sidenav"];
+  const appContentClasses: string[] = ["app-content"];
 
-  if(open) navbarClasses.push('open')
-  if(full) appContentClasses.push('full')
-  console.log(navbarClasses,appContentClasses);
-  
-  const menuOpenHandler = (e:React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    e.preventDefault()
+  if (open) navbarClasses.push("open");
+  if (full) appContentClasses.push("full");
 
-    setOpen(!open)
-    setFull(!full)
-  }  
+  const menuOpenHandler = (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+
+    setOpen(!open);
+    setFull(!full);
+  };
   if (logout) return <Preview />;
   return (
     <div>
@@ -107,7 +126,7 @@ export const Home = (props: any) => {
               <a href="/" onClick={menuOpenHandler}>
                 <i className="material-icons black-text">dehaze</i>
               </a>
-              <span className="black-text">12.12.12</span>
+              <span className="black-text">{date}</span>
             </div>
 
             <ul className="right hide-on-small-and-down">
@@ -116,8 +135,8 @@ export const Home = (props: any) => {
                   className="dropdown-trigger black-text"
                   href="/"
                   data-target="dropdown"
-                >
-                  USER NAME
+                >   
+                {user && user.username}             
                   <i className="material-icons right">arrow_drop_down</i>
                 </a>
 
@@ -140,13 +159,18 @@ export const Home = (props: any) => {
         </nav>
 
         <ul className={navbarClasses.join(" ")}>
-          {links.map((link: ILink, index:number) => (
-            <li className={props.location.pathname === link.to ? 'active' : ''} key={index}>
+          {links.map((link: ILink, index: number) => (
+            <li
+              className={props.location.pathname === link.to ? "active" : ""}
+              key={index}
+            >
               <NavLink
-                to={link.to}                
+                to={link.to}
                 className="waves-effect waves-orange pointer"
-                key={index + '-nav-link'}
-          >{link.innerText}</NavLink>
+                key={index + "-nav-link"}
+              >
+                {link.innerText}
+              </NavLink>
             </li>
           ))}
         </ul>

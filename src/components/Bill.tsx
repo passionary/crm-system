@@ -1,6 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
 
-export const Bill = (props: any) => {
+const Bill = ({rates, base, date}: any) => {  
+
+  // const [base, setBase] = useState(0);
+  // let [rates,setRates] = useState()
+  // const [date, setDate] = useState('')
+
+  const getCurrency = (currency: string) => {
+    return Math.floor(base * rates[currency])
+  }
+
+  // useEffect(() => {
+  //   const key = process.env.REACT_APP_FIXER;
+
+  //   fetch(
+  //     `http://data.fixer.io/api/latest?access_key=${key}&symbols=KZT,USD,EUR`
+  //   )
+  //     .then((res) => res.json())
+  //     .then((res) => {              
+  //       setRates(res.rates)
+  //       setDate(res.date)
+        
+  //       setBase(10000 / (res.rates!["KZT"] / res.rates!["EUR"]));
+  //     });
+  // }, []);  
+
+  const getCurrencySymbol = (value:any,currency: any) => {
+    return new Intl.NumberFormat('ru-RU', {
+      style: 'currency',
+      currency
+    }).format(value)
+  }
+
   return (
     <div className="app-page">
       <div>
@@ -18,9 +50,11 @@ export const Bill = (props: any) => {
               <div className="card-content white-text">
                 <span className="card-title">Счет в валюте</span>
 
-                <p className="currency-line">
-                  <span>12.0 Р</span>
-                </p>
+                {rates && Object.keys(rates).map((rate: any,index:number) => (
+                  <p className="currency-line" key={index}>
+                    <span>{getCurrencySymbol(getCurrency(rate),rate)}</span>
+                  </p>
+                ))}
               </div>
             </div>
           </div>
@@ -41,11 +75,12 @@ export const Bill = (props: any) => {
                   </thead>
 
                   <tbody>
-                    <tr>
-                      <td>руб</td>
-                      <td>12121</td>
-                      <td>12.12.12</td>
-                    </tr>
+                    {rates && Object.keys(rates).map((rate:any, index:number) => (
+                    <tr key={index}>
+                      <td>{rate}</td>
+                    <td>{rates[rate]}</td>
+                    <td>{date}</td>
+                    </tr>))}
                   </tbody>
                 </table>
               </div>
@@ -56,3 +91,5 @@ export const Bill = (props: any) => {
     </div>
   );
 };
+
+export default Bill

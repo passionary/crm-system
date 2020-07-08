@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import "materialize-css/dist/js/materialize.min.js";
 import { connect } from "react-redux";
-import { Redirect } from "react-router-dom";
+import { Redirect, NavLink } from "react-router-dom";
 
 const Login = (props: any) => {
   const [auth, setAuth] = useState(false);
@@ -90,7 +90,7 @@ const Login = (props: any) => {
 
             <p className="center">
               Нет аккаунта?
-              <a href="/">Зарегистрироваться</a>
+              <NavLink to="/register">Зарегистрироваться</NavLink>
             </p>
           </div>
         </form>

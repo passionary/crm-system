@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { Redirect } from "react-router-dom";
+import { Redirect, NavLink } from "react-router-dom";
 
 const Register = (props: any) => {
   const [auth, setAuth] = useState(false);
@@ -10,11 +10,14 @@ const Register = (props: any) => {
   const [emailClasses, setEmailClass] = useState(["validate"]);
   const [passwordClasses, setPasswordClass] = useState(["validate"]);
   const [nameClasses, setnameClass] = useState(["validate"]);
+  const [access, setAccess] = useState(false)
 
   useEffect(() => {
     M.updateTextFields();
   }, []);
-
+  const accessHandler = (e: React.ChangeEvent<HTMLInputElement>) => {    
+    setAccess(!access)
+  }
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -34,6 +37,10 @@ const Register = (props: any) => {
       return false;
     }
     setnameClass(['validate']);
+    if(!access) {
+      props.setToast("You need access our rules")
+      return false
+    }
     const form = document.querySelector("#form");
 
     if (!form) return;
@@ -97,7 +104,7 @@ const Register = (props: any) => {
             </div>
             <p>
               <label>
-                <input type="checkbox" />
+                <input type="checkbox" onChange={accessHandler} />
                 <span>С правилами согласен</span>
               </label>
             </p>
@@ -115,7 +122,7 @@ const Register = (props: any) => {
 
             <p className="center">
               Уже есть аккаунт?
-              <a href="/">Войти!</a>
+              <NavLink to="/login">Войти!</NavLink>
             </p>
           </div>
         </form>
@@ -130,8 +137,18 @@ const auth = (token: string) => {
     payload: token,
   };
 };
+const setToast = (message:string) => {
+  return (dispatch: any) => {
+    dispatch({
+      type: 'set-toast',
+      payload: message
+    })
+    M.toast({html: message})
+  }  
+}
 const mapDispatchToProps = {
   auth,
+  setToast
 };
 
 export default connect(null, mapDispatchToProps)(Register);

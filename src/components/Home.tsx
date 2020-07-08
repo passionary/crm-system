@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, Switch, Route, Redirect } from "react-router-dom";
-import { Bill } from "./Bill";
+import Bill from "./Bill";
 import { Categories } from "./Categories";
 import { History } from "./History";
 import { Planning } from "./Planning";
 import { Record } from "./Record";
 import { Preview } from "./Preview";
 import { Profile } from "./Profile";
+import LoadedComponent from './LoadedComponent'
 import { getCookie } from "../cookie";
 
 interface IRoute {
   path: string;
   exact: boolean;
-  component: any;
+  component?: any;
+  render?:any
 }
 
 interface ILink {
@@ -31,34 +33,37 @@ const routes: IRoute[] = [
   {
     path: "/",
     exact: true,
-    component: Bill,
+    render: (props:any) => {
+      return (<LoadedComponent {...props} component={Bill} />)
+    }
   },
   {
     path: "/history",
     exact: true,
-    component: History,
+    component: History
   },
   {
     path: "/planning",
     exact: true,
-    component: Planning,
+    component: Planning
   },
   {
     path: "/new-record",
     exact: true,
-    component: Record,
+    component: Record
   },
   {
     path: "/categories",
     exact: true,
-    component: Categories,
+    component: Categories
   },
   {
     path: "/profile",
     exact: true,
-    component: Profile,
+    component: Profile
   },
 ];
+
 export const Home = (props: any) => {
   let interval: any;
   

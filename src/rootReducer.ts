@@ -3,7 +3,9 @@ import { setCookie, deleteCookie } from './cookie'
 
 const initState = {
     token: null,
-    isLoading: false
+    isLoading: false,
+    message: '',
+    loader: false
 }
 
 export const rootReducer:redux.Reducer<any,any> = (state:any = initState, action:any) => {
@@ -29,6 +31,18 @@ export const rootReducer:redux.Reducer<any,any> = (state:any = initState, action
         case 'set-token':
             return {
                 ...state, token: action.payload
+            }
+        case 'set-toast':
+            return {
+                ...state, message: action.payload
+            }
+        case 'run-loader':
+            return {
+                ...state, loader: true
+            }
+        case 'stop-loader':
+            return {
+                ...state, loader: false
             }
         default:
             return state;

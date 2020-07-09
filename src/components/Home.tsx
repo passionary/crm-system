@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, Switch, Route, Redirect } from "react-router-dom";
 import Bill from "./Bill";
-import { Categories } from "./Categories";
+import Categories from "./Categories";
 import { History } from "./History";
 import { Planning } from "./Planning";
 import { Record } from "./Record";
@@ -33,7 +33,7 @@ const routes: IRoute[] = [
     path: "/",
     exact: true,
     component: (props:any) => {
-      return (<LoadedComponent {...props} component={Bill} url={`http://data.fixer.io/api/latest?access_key=${process.env.REACT_APP_FIXER}&symbols=KZT,USD,EUR`} toDefine={['rates','date']} initial={{rates:{},date:'',base:0}} additional={(result:any) => ({base:10000 / (result['rates']!["KZT"] / result['rates']!["EUR"])})} />)
+      return (<LoadedComponent {...props} component={Bill} url={`http://data.fixer.io/api/latest?access_key=${process.env.REACT_APP_FIXER}&symbols=KZT,USD,EUR`} toDefine={[['rates','rates'],['date','date']]} initial={{rates:{},date:'',base:0}} additional={(result:any) => ({base:10000 / (result['rates']!["KZT"] / result['rates']!["EUR"])})} />)
     }
   },
   {
@@ -54,7 +54,9 @@ const routes: IRoute[] = [
   {
     path: "/categories",
     exact: true,
-    component: Categories
+    component: (props:any) => {
+      return <LoadedComponent {...props } component={Categories} url="http://127.0.0.1:8000/api/categories" toDefine={[['categories','']]} initial={{categories:[]}} />
+    }
   },
   {
     path: "/profile",

@@ -5,7 +5,8 @@ const initState = {
     token: null,
     isLoading: false,
     message: '',
-    loader: false
+    loader: false,
+    serverData: {categories:[]}
 }
 
 export const rootReducer:redux.Reducer<any,any> = (state:any = initState, action:any) => {
@@ -43,6 +44,10 @@ export const rootReducer:redux.Reducer<any,any> = (state:any = initState, action
         case 'stop-loader':
             return {
                 ...state, loader: false
+            }
+        case 'fetchServerData':
+            return {
+                ...state, serverData: action.payload
             }
         default:
             return state;

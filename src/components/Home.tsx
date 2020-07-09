@@ -13,8 +13,7 @@ import { getCookie } from "../cookie";
 interface IRoute {
   path: string;
   exact: boolean;
-  component?: any;
-  render?:any
+  component: any;  
 }
 
 interface ILink {
@@ -33,8 +32,8 @@ const routes: IRoute[] = [
   {
     path: "/",
     exact: true,
-    render: (props:any) => {
-      return (<LoadedComponent {...props} component={Bill} />)
+    component: (props:any) => {
+      return (<LoadedComponent {...props} component={Bill} url={`http://data.fixer.io/api/latest?access_key=${process.env.REACT_APP_FIXER}&symbols=KZT,USD,EUR`} toDefine={['rates','date']} initial={{rates:{},date:'',base:0}} additional={(result:any) => ({base:10000 / (result['rates']!["KZT"] / result['rates']!["EUR"])})} />)
     }
   },
   {

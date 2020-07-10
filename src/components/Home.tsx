@@ -3,12 +3,13 @@ import { NavLink, Switch, Route, Redirect } from "react-router-dom";
 import Bill from "./Bill";
 import Categories from "./Categories";
 import { History } from "./History";
-import { Planning } from "./Planning";
+import Planning from "./Planning";
 import { Record } from "./Record";
 import { Preview } from "./Preview";
 import { Profile } from "./Profile";
 import LoadedComponent from './LoadedComponent'
 import { getCookie } from "../cookie";
+import { useDispatch } from "react-redux";
 
 interface IRoute {
   path: string;
@@ -33,7 +34,7 @@ const routes: IRoute[] = [
     path: "/",
     exact: true,
     component: (props:any) => {
-      return (<LoadedComponent {...props} component={Bill} url={`http://data.fixer.io/api/latest?access_key=${process.env.REACT_APP_FIXER}&symbols=KZT,USD,EUR`} toDefine={[['rates','rates'],['date','date']]} initial={{rates:{},date:'',base:0}} additional={(result:any) => ({base:10000 / (result['rates']!["KZT"] / result['rates']!["EUR"])})} />)
+      return (<LoadedComponent {...props} component={Bill} url={`http://data.fixer.io/api/latest?access_key=${process.env.REACT_APP_FIXER}&symbols=KZT,USD,EUR`} toDefine={[['rates','rates'],['date','date']]} initial={{rates:{},date:'',base:0}} />)
     }
   },
   {
@@ -44,12 +45,16 @@ const routes: IRoute[] = [
   {
     path: "/planning",
     exact: true,
-    component: Planning
+    component: (props:any) => {
+      return <LoadedComponent {...props} component={Planning} url="http://127.0.0.1:8000/api/categories" toDefine={[['categories','']]} initial={{categories:[]}} />
+    }
   },
   {
     path: "/new-record",
     exact: true,
-    component: Record
+    component: (props:any) => {
+      return <LoadedComponent {...props} component={Record} url="http://127.0.0.1:8000/api/categories" toDefine={[['categories','']]} initial={{categories:[]}} />
+    }
   },
   {
     path: "/categories",
@@ -79,6 +84,7 @@ export const Home = (props: any) => {
 
   const [date, setDate] = useState(new Intl.DateTimeFormat('ru-RU',dateOptions).format(new Date()));
   const [user, setUser] = useState()
+  const dispatch = useDispatch()
   useEffect(() => {
     var elems = document.querySelectorAll(".dropdown-trigger");
     M.Dropdown.init(elems, {});
@@ -87,8 +93,12 @@ export const Home = (props: any) => {
     // },1000);
     fetch(`http://127.0.0.1:8000/api/user?token=${getCookie('token')}`)
     .then(res => res.json())
-    .then(res => {
-      setUser(res)      
+    .then(res => {      
+      dispatch({
+        type: 'init-bill',
+        payload: res.bill
+      })
+      setUser(res)
     })
     return () => {
       clearInterval(interval);

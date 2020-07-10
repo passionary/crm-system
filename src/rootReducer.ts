@@ -45,6 +45,10 @@ export const rootReducer:redux.Reducer<any,any> = (state:any = initState, action
             return {
                 ...state, loader: false
             }
+        case 'init-bill':
+            return {
+                ...state, bill: action.payload
+            }
         case 'fetchServerData':
             return {
                 ...state, serverData: action.payload

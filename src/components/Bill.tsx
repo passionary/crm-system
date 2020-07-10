@@ -1,8 +1,13 @@
 import React from "react";
+import { connect } from "react-redux";
 
-const Bill = ({rates, base, date}: any) => {    
-
-  const getCurrency = (currency: string) => {
+const Bill = ({rates, date, bill}: any) => {
+  console.log(rates, date, bill);
+  
+  const base = (bill:any) => (bill / (rates!["KZT"] / rates!["EUR"]))
+  const getCurrency = (base:any, currency: string) => {
+    console.log(base);
+    
     return Math.floor(base * rates[currency])
   }
 
@@ -30,9 +35,9 @@ const Bill = ({rates, base, date}: any) => {
               <div className="card-content white-text">
                 <span className="card-title">Счет в валюте</span>
 
-                {Object.keys(rates).map((rate: any,index:number) => (
+                {rates && date && bill && Object.keys(rates).map((rate: any,index:number) => (
                   <p className="currency-line" key={index}>
-                    <span>{getCurrencySymbol(getCurrency(rate),rate)}</span>
+                    <span>{getCurrencySymbol(getCurrency(base(bill.bill),rate),rate)}</span>
                   </p>
                 ))}
               </div>
@@ -72,4 +77,4 @@ const Bill = ({rates, base, date}: any) => {
   );
 };
 
-export default Bill
+export default connect((state:any) => ({bill:state.bill}),null)(Bill)

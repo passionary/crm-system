@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 const Categories = ({categories, createCategory, editCategory}: any) => {
-  const [load, setLoad] = useState(false)
+  const [load, setLoad] = useState(false)  
+  
   // const [current, setCurrent] = useState()  
   
   setTimeout(() => {M.FormSelect.init(document.querySelector('#category-list') as any)},0)

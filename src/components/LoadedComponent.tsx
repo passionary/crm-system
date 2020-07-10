@@ -8,7 +8,9 @@ const LoadedComponent = ({
   toDefine,
   initial,
   additional,
-}: any) => {
+  bill
+}: any) => {  
+  
   const [data, setData] = useState(initial);
   const [load, setLoad] = useState(true);
   let [render, setRender] = useState(0);
@@ -36,12 +38,14 @@ const LoadedComponent = ({
         );
 
         setLoad(false);
+                 
         setData(Object.assign({}, data, additional ? additional(res) : {}));
       });
   }, []);
   if (load) return <Loader />;
   return React.createElement(component, {
     ...data,
+    bill,
     createCategory,
     editCategory,
   });

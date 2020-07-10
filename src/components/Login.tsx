@@ -13,6 +13,7 @@ const Login = (props: any) => {
     M.updateTextFields();
   }, []);
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+    
     e.preventDefault();
 
     if (!/[0-9a-z]+@[a-z]/.test(email.current!.value)) {

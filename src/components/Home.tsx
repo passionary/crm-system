@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { NavLink, Switch, Route, Redirect } from "react-router-dom";
 import Bill from "./Bill";
 import Categories from "./Categories";
-import { History } from "./History";
+import History from "./History";
 import Planning from "./Planning";
 import Record from "./Record";
 import { Preview } from "./Preview";
@@ -10,7 +10,7 @@ import Profile from "./Profile";
 import LoadedComponent from './LoadedComponent'
 import { getCookie } from "../cookie";
 import { useDispatch, connect } from "react-redux";
-import { DetailRecord } from "./DetailRecord";
+import DetailRecord from "./DetailRecord";
 
 interface IRoute {
   path: string;

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
+import { translate } from "../filters/translate";
 
-const Categories = ({categories, createCategory, editCategory}: any) => {
+const Categories = ({categories, createCategory, editCategory, language}: any) => {
   const [load, setLoad] = useState(false)  
   
   // const [current, setCurrent] = useState()  
@@ -45,33 +46,33 @@ const Categories = ({categories, createCategory, editCategory}: any) => {
   return (
     <>
       <div className="page-title">
-        <h3>Категории</h3>
+        <h3>{translate(language,'Menu_Categories')}</h3>
       </div>
       <section>
         <div className="row">
           <div className="col s12 m6">
             <div>
               <div className="page-subtitle">
-                <h4>Создать</h4>
+                <h4>{translate(language,'Create')}</h4>
               </div>
 
               <form onSubmit={createSubmitHandler} id="create">
                 <div className="input-field">
                   <input name="name" id="name" type="text" />
-                  <label htmlFor="name">Название</label>
-                  <span className="helper-text invalid">Введите название</span>
+                  <label htmlFor="name">{translate(language,'Title')}</label>
+                  <span className="helper-text invalid">{translate(language,'Message_CategoryTitle')}</span>
                 </div>
 
                 <div className="input-field">
                   <input name="limit" id="limit" type="number" />
-                  <label htmlFor="limit">Лимит</label>
+                  <label htmlFor="limit">{translate(language,'Limit')}</label>
                   <span className="helper-text invalid">
-                    Минимальная величина
+                  {translate(language,'Message_MinLength')}
                   </span>
                 </div>
 
                 <button className="btn waves-effect waves-light" type="submit">
-                  Создать
+                {translate(language,'Create')}
                   <i className="material-icons right">send</i>
                 </button>
               </form>
@@ -80,7 +81,7 @@ const Categories = ({categories, createCategory, editCategory}: any) => {
           <div className="col s12 m6">
             <div>
               <div className="page-subtitle">
-                <h4>Редактировать</h4>
+                <h4>{translate(language,'Edit')}</h4>
               </div>
 
               <form onSubmit={editSubmitHandler} id="edit">
@@ -88,23 +89,23 @@ const Categories = ({categories, createCategory, editCategory}: any) => {
                   <select name="id" id="category-list">
                     {categories && categories.length && categories.map((cat:any,index:number) => <option key={index} value={cat.id}>{cat.name}</option>)}
                   </select>
-                  <label>Выберите категорию</label>
+                  <label>{translate(language,'SelectCategory')}</label>
                 </div>
 
                 <div className="input-field">
                   <input name="name" type="text" id="name" />
-                  <label htmlFor="name">Название</label>
-                  <span className="helper-text invalid">TITLE</span>
+                  <label htmlFor="name">{translate(language,'Title')}</label>
+                  <span className="helper-text invalid">{translate(language,'Title')}</span>
                 </div>
 
                 <div className="input-field">
                   <input name="limit" id="limit" type="number" />
-                  <label htmlFor="limit">Лимит</label>
-                  <span className="helper-text invalid">LIMIT</span>
+                  <label htmlFor="limit">{translate(language,'Limit')}</label>
+                  <span className="helper-text invalid">{translate(language,'Limit')}</span>
                 </div>
 
                 <button className="btn waves-effect waves-light" type="submit">
-                  Обновить
+                {translate(language,'Update')}
                   <i className="material-icons right">send</i>
                 </button>
               </form>

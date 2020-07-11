@@ -5,6 +5,7 @@ const initState = {
     token: null,
     isLoading: false,
     message: '',
+    language: 'en',
     loader: false,
     serverData: {categories:[]}
 }
@@ -52,6 +53,10 @@ export const rootReducer:redux.Reducer<any,any> = (state:any = initState, action
         case 'init-user':
             return {
                 ...state, user: action.payload
+            }
+        case 'set-locale':
+            return {
+                ...state, language: action.payload
             }
         default:
             return state;

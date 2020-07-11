@@ -1,9 +1,10 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
+import { connect } from "react-redux";
+import { translate } from "../filters/translate";
 
-export const History = ({ records, categories }: any) => {
-  console.log(records);
+const History = ({ records, categories, language }: any) => {  
   
   const dateOptions = {
     day: "2-digit",
@@ -49,7 +50,7 @@ export const History = ({ records, categories }: any) => {
   return (
     <>
       <div className="page-title">
-        <h3>История записей</h3>
+        <h3>{translate(language,'History_Title')}</h3>
       </div>
 
       <div className="history-chart">
@@ -61,11 +62,11 @@ export const History = ({ records, categories }: any) => {
           <thead>
             <tr>
               <th>#</th>
-              <th>Сумма</th>
-              <th>Дата</th>
-              <th>Категория</th>
-              <th>Тип</th>
-              <th>Открыть</th>
+              <th>{translate(language,'Amount')}</th>
+              <th>{translate(language,'Date')}</th>
+              <th>{translate(language,'Category')}</th>
+              <th>{translate(language,'Type')}</th>
+              <th>{translate(language,'Open')}</th>
             </tr>
           </thead>
 
@@ -86,7 +87,7 @@ export const History = ({ records, categories }: any) => {
                       rec.type === "income" ? "green" : "red"
                     }`}
                   >
-                    {rec.type === "income" ? "Доход" : "Расход"}
+                    {translate(language,rec.type === "income" ? "Income" : "Outcome")}
                   </span>
                 </td>
                 <td>
@@ -102,3 +103,5 @@ export const History = ({ records, categories }: any) => {
     </>
   );
 };
+
+export default connect((state:any) => ({language: state.language}),null)(History)

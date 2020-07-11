@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { getCurrencySymbol } from "../utils/getCurrencySymbol";
+import { translate } from "../filters/translate";
 
-const Planning = ({ categories, bill }: any) => {
+const Planning = ({ categories, bill, language }: any) => {
   useEffect(() => {
     let elems:any
     setTimeout(() => {
@@ -39,7 +40,7 @@ const Planning = ({ categories, bill }: any) => {
   return (
     <>
       <div className="page-title">
-        <h3>Планирование</h3>
+        <h3>{translate(language,'Menu_Planning')}</h3>
         <h4>{bill && getCurrencySymbol(bill.bill, "RUB")}</h4>
       </div>
 
@@ -61,7 +62,7 @@ const Planning = ({ categories, bill }: any) => {
                 {amount > 0
                   ? getCurrencySymbol(amount, "RUB")
                   : `+${getCurrencySymbol(Math.abs(amount), "RUB")}`}{" "}
-                из {getCurrencySymbol(cat.limit, "RUB")}
+                {translate(language,'Of')} {getCurrencySymbol(cat.limit, "RUB")}
               </p>
               <div className="progress tooltipped" data-tooltipp={tooltipp}>
                 <div
@@ -77,4 +78,4 @@ const Planning = ({ categories, bill }: any) => {
   );
 };
 
-export default connect((state: any) => ({ bill: state.bill }), null)(Planning);
+export default connect((state: any) => ({ bill: state.bill, language: state.language }), null)(Planning);

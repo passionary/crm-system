@@ -1,26 +1,29 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { connect } from "react-redux";
+import { stat } from "fs";
+import { translate } from "../filters/translate";
 
-export const DetailRecord = ({ record }: any) => {
+const DetailRecord = ({ record, language }: any) => {
   console.log(record);
 
   return (
     <div>
       <div className="breadcrumb-wrap">
         <NavLink to="/history" className="breadcrumb">
-          История
+        {translate(language,'Menu_History')}
         </NavLink>
         <a className="breadcrumb">
-          {record.type === "income" ? "Доход" : "Расход"}
+        {translate(language,record.type === "income" ? "Income" : "Outcome")}
         </a>
       </div>
       <div className="row">
         <div className="col s12 m6">
           <div className={`card ${record.type === "income" ? "green" : "red"}`}>
             <div className="card-content white-text">
-              <p>Описание: {record.description}</p>
-              <p>Сумма: {record.amount}</p>
-              <p>Категория: {record.category && record.category.name}</p>
+              <p>{translate(language,'Description')}: {record.description}</p>
+              <p>{translate(language,'Amount')}: {record.amount}</p>
+              <p>{translate(language,'Category')}: {record.category && record.category.name}</p>
 
               <small>{record.created_at}</small>
             </div>
@@ -30,3 +33,5 @@ export const DetailRecord = ({ record }: any) => {
     </div>
   );
 };
+
+export default connect((state:any) => ({language: state.language}), null)(DetailRecord)

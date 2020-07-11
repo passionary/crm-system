@@ -4,12 +4,13 @@ import Bill from "./Bill";
 import Categories from "./Categories";
 import { History } from "./History";
 import Planning from "./Planning";
-import { Record } from "./Record";
+import Record from "./Record";
 import { Preview } from "./Preview";
 import { Profile } from "./Profile";
 import LoadedComponent from './LoadedComponent'
 import { getCookie } from "../cookie";
 import { useDispatch } from "react-redux";
+import { DetailRecord } from "./DetailRecord";
 
 interface IRoute {
   path: string;
@@ -40,7 +41,9 @@ const routes: IRoute[] = [
   {
     path: "/history",
     exact: true,
-    component: History
+    component: (props:any) => {
+      return <LoadedComponent {...props} component={History} url="http://127.0.0.1:8000/api/history" toDefine={[['records','']]} initial={{records:[]}} />
+    }
   },
   {
     path: "/planning",
@@ -54,6 +57,15 @@ const routes: IRoute[] = [
     exact: true,
     component: (props:any) => {
       return <LoadedComponent {...props} component={Record} url="http://127.0.0.1:8000/api/categories" toDefine={[['categories','']]} initial={{categories:[]}} />
+    }
+  },
+  {
+    path: "/record/:id",
+    exact: true,
+    component: ({match}:any) => {      
+      
+      const url = `http://127.0.0.1:8000/api/record?id=${match.params && match.params.id}`
+      return <LoadedComponent {...match}  component={DetailRecord} url={url} toDefine={[['record','']]} initial={{record:{}}} />
     }
   },
   {

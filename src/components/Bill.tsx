@@ -1,22 +1,17 @@
 import React from "react";
 import { connect } from "react-redux";
+import { getCurrencySymbol } from '../utils/getCurrencySymbol'
 
 const Bill = ({rates, date, bill}: any) => {
   console.log(rates, date, bill);
   
   const base = (bill:any) => (bill / (rates!["KZT"] / rates!["EUR"]))
-  const getCurrency = (base:any, currency: string) => {
-    console.log(base);
+  const getCurrency = (base:any, currency: string) => {    
     
     return Math.floor(base * rates[currency])
   }
 
-  const getCurrencySymbol = (value:any,currency: any) => {
-    return new Intl.NumberFormat('ru-RU', {
-      style: 'currency',
-      currency
-    }).format(value)
-  }
+  
 
   return (
     <div className="app-page">

@@ -1,6 +1,16 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 
-export const History = () => {
+export const History = ({ records }: any) => {  
+  
+  const dateOptions = {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  }
   return (
     <>
       <div className="page-title">
@@ -25,20 +35,22 @@ export const History = () => {
           </thead>
 
           <tbody>
-            <tr>
-              <td>1</td>
-              <td>1212</td>
-              <td>12.12.32</td>
-              <td>name</td>
+            {records.map((rec:any,index:number) => (
+              <tr key={rec.id}>
+              <td>{index}</td>
+              <td>{rec.amount}</td>
+            <td>{rec.created_at.replace(rec.created_at.slice(-8),'').replace(/T/," ")}</td>
+              <td>{rec.category}</td>
               <td>
-                <span className="white-text badge red">Расход</span>
+                <span className={`white-text badge ${rec.type === 'income' ? 'green' : 'red'}`}>{rec.type === 'income' ? 'Доход' : 'Расход'}</span>
               </td>
               <td>
-                <button className="btn-small btn">
+                <NavLink to={`/record/${rec.id}`} className="btn-small btn">
                   <i className="material-icons">open_in_new</i>
-                </button>
+                </NavLink>
               </td>
             </tr>
+            ))}            
           </tbody>
         </table>
       </section>

@@ -42,7 +42,7 @@ const routes: IRoute[] = [
     path: "/history",
     exact: true,
     component: (props:any) => {
-      return <LoadedComponent {...props} component={History} url="http://127.0.0.1:8000/api/history" toDefine={[['records','']]} initial={{records:[]}} />
+      return <LoadedComponent {...props} component={History} url="http://127.0.0.1:8000/api/history" toDefine={[['records','records'],['categories','categories']]} initial={{records:[], categories:[]}} />
     }
   },
   {

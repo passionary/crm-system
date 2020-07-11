@@ -16,7 +16,6 @@ const Record = ({ categories, bill, initBill }: any) => {
     const amount = document.querySelector<HTMLInputElement>("#amount")!.value;
     e.preventDefault();
     const body = {
-      category: curCategory.value,
       category_id: curCategory.id,
       type,
       amount,
@@ -31,8 +30,10 @@ const Record = ({ categories, bill, initBill }: any) => {
       },
       body: JSON.stringify(body),
     })
-      .then((res) => res.json())
+      .then((res) => res.text())
       .then((res) => {
+        console.log(res);
+        
         const billUrl = `http://127.0.0.1:8000/api/set-bill?id=${bill.id}&type=${type}&amount=${amount}`;        
         
         fetch(billUrl)

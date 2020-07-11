@@ -1,7 +1,7 @@
 import React from "react";
 import { getCookie } from "../cookie";
 import { connect } from "react-redux";
-import { Home } from "./Home";
+import Home from "./Home";
 import { Preview } from "./Preview";
 import { Loader } from "./Loader";
 

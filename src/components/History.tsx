@@ -1,8 +1,10 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Bar, Line, Pie } from "react-chartjs-2";
+import { Pie } from "react-chartjs-2";
 
 export const History = ({ records, categories }: any) => {
+  console.log(records);
+  
   const dateOptions = {
     day: "2-digit",
     month: "long",
@@ -77,7 +79,7 @@ export const History = ({ records, categories }: any) => {
                     .replace(rec.created_at.slice(-8), "")
                     .replace(/T/, " ")}
                 </td>
-                <td>{rec.category}</td>
+                <td>{rec.category.name}</td>
                 <td>
                   <span
                     className={`white-text badge ${

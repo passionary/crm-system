@@ -49,9 +49,9 @@ export const rootReducer:redux.Reducer<any,any> = (state:any = initState, action
             return {
                 ...state, bill: action.payload
             }
-        case 'fetchServerData':
+        case 'init-user':
             return {
-                ...state, serverData: action.payload
+                ...state, user: action.payload
             }
         default:
             return state;

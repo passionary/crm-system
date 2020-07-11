@@ -6,10 +6,10 @@ import { History } from "./History";
 import Planning from "./Planning";
 import Record from "./Record";
 import { Preview } from "./Preview";
-import { Profile } from "./Profile";
+import Profile from "./Profile";
 import LoadedComponent from './LoadedComponent'
 import { getCookie } from "../cookie";
-import { useDispatch } from "react-redux";
+import { useDispatch, connect } from "react-redux";
 import { DetailRecord } from "./DetailRecord";
 
 interface IRoute {
@@ -82,7 +82,7 @@ const routes: IRoute[] = [
   },
 ];
 
-export const Home = (props: any) => {
+const Home = (props: any) => {  
   let interval: any;
   
   const dateOptions = {
@@ -95,7 +95,6 @@ export const Home = (props: any) => {
   }
 
   const [date, setDate] = useState(new Intl.DateTimeFormat('ru-RU',dateOptions).format(new Date()));
-  const [user, setUser] = useState()
   const dispatch = useDispatch()
   useEffect(() => {
     var elems = document.querySelectorAll(".dropdown-trigger");
@@ -110,7 +109,10 @@ export const Home = (props: any) => {
         type: 'init-bill',
         payload: res.bill
       })
-      setUser(res)
+      dispatch({
+        type: 'init-user',
+        payload: res
+      })
     })
     return () => {
       clearInterval(interval);
@@ -164,7 +166,7 @@ export const Home = (props: any) => {
                   href="/"
                   data-target="dropdown"
                 >   
-                {user && user.username}             
+                {props.user && props.user.username}             
                   <i className="material-icons right">arrow_drop_down</i>
                 </a>
 
@@ -214,11 +216,13 @@ export const Home = (props: any) => {
           </div>
         </main>
         <div className="fixed-action-btn">
-          <a className="btn-floating btn-large blue" href="/">
+          <NavLink to="/new-record" className="btn-floating btn-large blue" href="/">
             <i className="large material-icons">add</i>
-          </a>
+          </NavLink>
         </div>
       </div>
     </div>
   );
 };
+
+export default connect((state:any) => ({user:state.user}))(Home)

@@ -2,24 +2,26 @@ import React, { useRef, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Redirect, NavLink } from "react-router-dom";
 import { translate } from "../filters/translate";
-import { authenticate, setToast } from '../actions'
+import { authenticate, setToast } from "../actions";
 
-const Register = ({authenticate, user, setToast}: any) => {
+const Register = ({ authenticate, user, setToast }: any) => {
   const [auth, setAuth] = useState(false);
   let email = useRef<HTMLInputElement>(null);
   let password = useRef<HTMLInputElement>(null);
   let name = useRef<HTMLInputElement>(null);
+  let amount = useRef<HTMLInputElement>(null);
   const [emailClasses, setEmailClass] = useState(["validate"]);
   const [passwordClasses, setPasswordClass] = useState(["validate"]);
   const [nameClasses, setnameClass] = useState(["validate"]);
-  const [access, setAccess] = useState(false)
+  const [amountClasses, setAmountClass] = useState(["validate"]);
+  const [access, setAccess] = useState(false);
 
   useEffect(() => {
     M.updateTextFields();
   }, []);
-  const accessHandler = (e: React.ChangeEvent<HTMLInputElement>) => {    
-    setAccess(!access)
-  }
+  const accessHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAccess(!access);
+  };
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -31,17 +33,21 @@ const Register = ({authenticate, user, setToast}: any) => {
     if (password.current!.value.length < 3) {
       setPasswordClass([...passwordClasses, "invalid"]);
       return false;
-    }    
-    setPasswordClass(["validate"]);    
+    }
+    setPasswordClass(["validate"]);
 
     if (name.current!.value.length < 3) {
       setnameClass([...nameClasses, "invalid"]);
       return false;
     }
-    setnameClass(['validate']);
-    if(!access) {
-      setToast("You need access our rules")
-      return false
+    if (!amount.current!.value.length) {
+      setAmountClass([...amountClasses, "invalid"]);
+      return false;
+    }
+    setnameClass(["validate"]);
+    if (!access) {
+      setToast("You need access our rules");
+      return false;
     }
     const form = document.querySelector("#form");
 
@@ -52,11 +58,16 @@ const Register = ({authenticate, user, setToast}: any) => {
     })
       .then((res) => res.json())
       .then((res) => {
+        if (res.errors) {
+          setToast(Object.values(res.errors)[0]);
+          return;
+        }
         if (res.token) {
           authenticate(res.token);
           setAuth(true);
         }
-      });
+      })
+      .catch((e) => setToast(translate(user.language, "CatchError")));
   };
   if (auth) return <Redirect to="/" />;
   return (
@@ -64,7 +75,9 @@ const Register = ({authenticate, user, setToast}: any) => {
       <div className="grey darken-1 empty-layout">
         <form className="card auth-card" onSubmit={submitHandler} id="form">
           <div className="card-content">
-            <span className="card-title">{translate(user.language, 'CRM_Title')}</span>
+            <span className="card-title">
+              {translate(user.language, "CRM_Title")}
+            </span>
             <div className="input-field">
               <input
                 id="email"
@@ -86,7 +99,9 @@ const Register = ({authenticate, user, setToast}: any) => {
                 className={passwordClasses.join(" ")}
                 ref={password}
               />
-              <label htmlFor="password">{translate(user.language, 'Password')}</label>
+              <label htmlFor="password">
+                {translate(user.language, "Password")}
+              </label>
               {passwordClasses.includes("invalid") && (
                 <small className="helper-text invalid">Password</small>
               )}
@@ -99,15 +114,28 @@ const Register = ({authenticate, user, setToast}: any) => {
                 className={nameClasses.join(" ")}
                 ref={name}
               />
-              <label htmlFor="name">{translate(user.language, 'Name')}</label>
+              <label htmlFor="name">{translate(user.language, "Name")}</label>
               {nameClasses.includes("invalid") && (
                 <small className="helper-text invalid">Name</small>
+              )}
+            </div>
+            <div className="input-field">
+              <input
+                id="amount"
+                name="amount"
+                type="text"
+                className={amountClasses.join(" ")}
+                ref={amount}
+              />
+              <label htmlFor="email">Amount</label>
+              {amountClasses.includes("invalid") && (
+                <small className="helper-text invalid">Email</small>
               )}
             </div>
             <p>
               <label>
                 <input type="checkbox" onChange={accessHandler} />
-                <span>{translate(user.language, 'AcceptRules')}</span>
+                <span>{translate(user.language, "AcceptRules")}</span>
               </label>
             </p>
           </div>
@@ -117,14 +145,16 @@ const Register = ({authenticate, user, setToast}: any) => {
                 className="btn waves-effect waves-light auth-submit"
                 type="submit"
               >
-                {translate(user.language, 'Register')}
+                {translate(user.language, "Register")}
                 <i className="material-icons right">send</i>
               </button>
             </div>
 
             <p className="center">
-            {translate(user.language, 'HasAccount')}
-              <NavLink to="/login">{translate(user.language, 'Login')}!</NavLink>
+              {translate(user.language, "HasAccount")}
+              <NavLink to="/login">
+                {translate(user.language, "Login")}!
+              </NavLink>
             </p>
           </div>
         </form>
@@ -135,7 +165,10 @@ const Register = ({authenticate, user, setToast}: any) => {
 
 const mapDispatchToProps = {
   authenticate,
-  setToast
+  setToast,
 };
 
-export default connect((state:any) => ({user: state.user}), mapDispatchToProps)(Register);
+export default connect(
+  (state: any) => ({ user: state.user }),
+  mapDispatchToProps
+)(Register);

@@ -56,6 +56,16 @@ const History = ({ records, categories, user }: any) => {
         <Pie data={data} />
       </div>
 
+      {records && !records.length && (
+        <p className="center">
+          {translate(user.language, "NoRecords")}
+          .&nbsp;
+          <NavLink to="/new-record">
+            {translate(user.language, "AddFirst")}
+          </NavLink>
+        </p>
+      )}
+
       <section>
         <table>
           <thead>

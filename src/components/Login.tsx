@@ -3,10 +3,9 @@ import "materialize-css/dist/js/materialize.min.js";
 import { connect } from "react-redux";
 import { Redirect, NavLink } from "react-router-dom";
 import { translate } from "../filters/translate";
-import { authenticate, setToast } from '../actions'
+import { authenticate, setToast } from "../actions";
 
-const Login = ({authenticate, setToast, user}: any) => {  
-  
+const Login = ({ authenticate, setToast, user }: any) => {
   const [auth, setAuth] = useState(false);
   let email = useRef<HTMLInputElement>(null);
   let password = useRef<HTMLInputElement>(null);
@@ -16,7 +15,6 @@ const Login = ({authenticate, setToast, user}: any) => {
     M.updateTextFields();
   }, []);
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
-    
     e.preventDefault();
 
     if (!/[0-9a-z]+@[a-z]/.test(email.current!.value)) {
@@ -39,15 +37,20 @@ const Login = ({authenticate, setToast, user}: any) => {
     })
       .then((res) => res.json())
       .then((res) => {
+        if (res.errors) {
+          setToast(Object.values(res.errors)[0]);
+          return;
+        }
         if (res.token) {
-          setToast("You sign in!")
+          setToast("You sign in!");
           authenticate(res.token);
           setAuth(true);
         }
-      });
+      })
+      .catch((e) => setToast(translate(user.language, "CatchError")));
   };
 
-  if (auth) {    
+  if (auth) {
     return <Redirect to="/" />;
   }
 
@@ -56,8 +59,9 @@ const Login = ({authenticate, setToast, user}: any) => {
       <div className="grey darken-1 empty-layout">
         <form className="card auth-card" onSubmit={submitHandler} id="form">
           <div className="card-content">
-  <span className="card-title">{translate(user.language, 'CRM_Title')
-  }</span>
+            <span className="card-title">
+              {translate(user.language, "CRM_Title")}
+            </span>
             <div className="input-field">
               <input
                 ref={email}
@@ -79,7 +83,9 @@ const Login = ({authenticate, setToast, user}: any) => {
                 type="password"
                 className={passwordClasses.join(" ")}
               />
-              <label htmlFor="password">{translate(user.language, 'Password')}</label>
+              <label htmlFor="password">
+                {translate(user.language, "Password")}
+              </label>
               {passwordClasses.includes("invalid") && (
                 <small className="helper-text invalid">Password</small>
               )}
@@ -91,14 +97,16 @@ const Login = ({authenticate, setToast, user}: any) => {
                 className="btn waves-effect waves-light auth-submit"
                 type="submit"
               >
-                {translate(user.language, 'Login')}
+                {translate(user.language, "Login")}
                 <i className="material-icons right">send</i>
               </button>
             </div>
 
             <p className="center">
-            {translate(user.language, 'NoAccount')}
-              <NavLink to="/register">{translate(user.language, 'Register')}</NavLink>
+              {translate(user.language, "NoAccount")}
+              <NavLink to="/register">
+                {translate(user.language, "Register")}
+              </NavLink>
             </p>
           </div>
         </form>
@@ -109,7 +117,10 @@ const Login = ({authenticate, setToast, user}: any) => {
 
 const mapDispatchToProps = {
   authenticate,
-  setToast
+  setToast,
 };
 
-export default connect((state:any) => ({user: state.user}), mapDispatchToProps)(Login);
+export default connect(
+  (state: any) => ({ user: state.user }),
+  mapDispatchToProps
+)(Login);

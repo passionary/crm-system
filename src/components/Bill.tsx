@@ -3,8 +3,7 @@ import { connect } from "react-redux";
 import { getCurrencySymbol } from "../utils/getCurrencySymbol";
 import { translate } from "../filters/translate";
 
-const Bill = ({ rates, date, bill, user }: any) => {
-  console.log(rates, date, bill);
+const Bill = ({ rates, date, bill, user }: any) => {  
 
   const base = (bill: any) => bill / (rates!["KZT"] / rates!["EUR"]);
   const getCurrency = (base: any, currency: string) => {

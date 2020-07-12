@@ -1,11 +1,15 @@
 import redux from 'redux'
 import { setCookie, deleteCookie } from './cookie'
+import { dateOptions } from './utils/dateOptions'
 
 const initState = {
     token: null,
     isLoading: false,
     message: '',
-    language: 'en',
+    user:{
+        language: 'en'
+    },
+    date: new Intl.DateTimeFormat('en-EN',dateOptions).format(new Date()),
     loader: false,
     serverData: {categories:[]}
 }
@@ -57,6 +61,10 @@ export const rootReducer:redux.Reducer<any,any> = (state:any = initState, action
         case 'set-locale':
             return {
                 ...state, language: action.payload
+            }
+        case 'set-interval':
+            return {
+                ...state, date: action.payload
             }
         default:
             return state;

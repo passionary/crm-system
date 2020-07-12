@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { translate } from "../filters/translate";
 
-const Categories = ({categories, createCategory, editCategory, language}: any) => {
+const Categories = ({categories, createCategory, editCategory, user}: any) => {
   const [load, setLoad] = useState(false)  
   
   // const [current, setCurrent] = useState()  
@@ -46,33 +46,33 @@ const Categories = ({categories, createCategory, editCategory, language}: any) =
   return (
     <>
       <div className="page-title">
-        <h3>{translate(language,'Menu_Categories')}</h3>
+        <h3>{translate(user.language,'Menu_Categories')}</h3>
       </div>
       <section>
         <div className="row">
           <div className="col s12 m6">
             <div>
               <div className="page-subtitle">
-                <h4>{translate(language,'Create')}</h4>
+                <h4>{translate(user.language,'Create')}</h4>
               </div>
 
               <form onSubmit={createSubmitHandler} id="create">
                 <div className="input-field">
                   <input name="name" id="name" type="text" />
-                  <label htmlFor="name">{translate(language,'Title')}</label>
-                  <span className="helper-text invalid">{translate(language,'Message_CategoryTitle')}</span>
+                  <label htmlFor="name">{translate(user.language,'Title')}</label>
+                  <span className="helper-text invalid">{translate(user.language,'Message_CategoryTitle')}</span>
                 </div>
 
                 <div className="input-field">
                   <input name="limit" id="limit" type="number" />
-                  <label htmlFor="limit">{translate(language,'Limit')}</label>
+                  <label htmlFor="limit">{translate(user.language,'Limit')}</label>
                   <span className="helper-text invalid">
-                  {translate(language,'Message_MinLength')}
+                  {translate(user.language,'Message_MinLength')}
                   </span>
                 </div>
 
                 <button className="btn waves-effect waves-light" type="submit">
-                {translate(language,'Create')}
+                {translate(user.language,'Create')}
                   <i className="material-icons right">send</i>
                 </button>
               </form>
@@ -81,7 +81,7 @@ const Categories = ({categories, createCategory, editCategory, language}: any) =
           <div className="col s12 m6">
             <div>
               <div className="page-subtitle">
-                <h4>{translate(language,'Edit')}</h4>
+                <h4>{translate(user.language,'Edit')}</h4>
               </div>
 
               <form onSubmit={editSubmitHandler} id="edit">
@@ -89,23 +89,23 @@ const Categories = ({categories, createCategory, editCategory, language}: any) =
                   <select name="id" id="category-list">
                     {categories && categories.length && categories.map((cat:any,index:number) => <option key={index} value={cat.id}>{cat.name}</option>)}
                   </select>
-                  <label>{translate(language,'SelectCategory')}</label>
+                  <label>{translate(user.language,'SelectCategory')}</label>
                 </div>
 
                 <div className="input-field">
                   <input name="name" type="text" id="name" />
-                  <label htmlFor="name">{translate(language,'Title')}</label>
-                  <span className="helper-text invalid">{translate(language,'Title')}</span>
+                  <label htmlFor="name">{translate(user.language,'Title')}</label>
+                  <span className="helper-text invalid">{translate(user.language,'Title')}</span>
                 </div>
 
                 <div className="input-field">
                   <input name="limit" id="limit" type="number" />
-                  <label htmlFor="limit">{translate(language,'Limit')}</label>
-                  <span className="helper-text invalid">{translate(language,'Limit')}</span>
+                  <label htmlFor="limit">{translate(user.language,'Limit')}</label>
+                  <span className="helper-text invalid">{translate(user.language,'Limit')}</span>
                 </div>
 
                 <button className="btn waves-effect waves-light" type="submit">
-                {translate(language,'Update')}
+                {translate(user.language,'Update')}
                   <i className="material-icons right">send</i>
                 </button>
               </form>

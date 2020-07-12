@@ -4,7 +4,7 @@ import { Pie } from "react-chartjs-2";
 import { connect } from "react-redux";
 import { translate } from "../filters/translate";
 
-const History = ({ records, categories, language }: any) => {  
+const History = ({ records, categories, user }: any) => {  
   
   const dateOptions = {
     day: "2-digit",
@@ -50,7 +50,7 @@ const History = ({ records, categories, language }: any) => {
   return (
     <>
       <div className="page-title">
-        <h3>{translate(language,'History_Title')}</h3>
+        <h3>{translate(user.language,'History_Title')}</h3>
       </div>
 
       <div className="history-chart">
@@ -62,11 +62,11 @@ const History = ({ records, categories, language }: any) => {
           <thead>
             <tr>
               <th>#</th>
-              <th>{translate(language,'Amount')}</th>
-              <th>{translate(language,'Date')}</th>
-              <th>{translate(language,'Category')}</th>
-              <th>{translate(language,'Type')}</th>
-              <th>{translate(language,'Open')}</th>
+              <th>{translate(user.language,'Amount')}</th>
+              <th>{translate(user.language,'Date')}</th>
+              <th>{translate(user.language,'Category')}</th>
+              <th>{translate(user.language,'Type')}</th>
+              <th>{translate(user.language,'Open')}</th>
             </tr>
           </thead>
 
@@ -87,7 +87,7 @@ const History = ({ records, categories, language }: any) => {
                       rec.type === "income" ? "green" : "red"
                     }`}
                   >
-                    {translate(language,rec.type === "income" ? "Income" : "Outcome")}
+                    {translate(user.language,rec.type === "income" ? "Income" : "Outcome")}
                   </span>
                 </td>
                 <td>
@@ -104,4 +104,4 @@ const History = ({ records, categories, language }: any) => {
   );
 };
 
-export default connect((state:any) => ({language: state.language}),null)(History)
+export default connect((state:any) => ({user: state.user}),null)(History)

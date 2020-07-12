@@ -2,8 +2,10 @@ import React, { useEffect, useState, useRef } from "react";
 import "materialize-css/dist/js/materialize.min.js";
 import { connect } from "react-redux";
 import { Redirect, NavLink } from "react-router-dom";
+import { translate } from "../filters/translate";
 
-const Login = (props: any) => {
+const Login = ({authenticate, user}: any) => {  
+  
   const [auth, setAuth] = useState(false);
   let email = useRef<HTMLInputElement>(null);
   let password = useRef<HTMLInputElement>(null);
@@ -37,12 +39,11 @@ const Login = (props: any) => {
       .then((res) => res.json())
       .then((res) => {
         if (res.token) {
-          props.auth(res.token);
+          authenticate(res.token);
           setAuth(true);
         }
       });
   };
-  console.log(emailClasses, passwordClasses);
 
   if (auth) return <Redirect to="/" />;
   return (
@@ -50,7 +51,8 @@ const Login = (props: any) => {
       <div className="grey darken-1 empty-layout">
         <form className="card auth-card" onSubmit={submitHandler} id="form">
           <div className="card-content">
-            <span className="card-title">Домашняя бухгалтерия</span>
+  <span className="card-title">{translate(user.language, 'CRM_Title')
+  }</span>
             <div className="input-field">
               <input
                 ref={email}
@@ -72,7 +74,7 @@ const Login = (props: any) => {
                 type="password"
                 className={passwordClasses.join(" ")}
               />
-              <label htmlFor="password">Пароль</label>
+              <label htmlFor="password">{translate(user.language, 'Password')}</label>
               {passwordClasses.includes("invalid") && (
                 <small className="helper-text invalid">Password</small>
               )}
@@ -84,14 +86,14 @@ const Login = (props: any) => {
                 className="btn waves-effect waves-light auth-submit"
                 type="submit"
               >
-                Войти
+                {translate(user.language, 'Login')}
                 <i className="material-icons right">send</i>
               </button>
             </div>
 
             <p className="center">
-              Нет аккаунта?
-              <NavLink to="/register">Зарегистрироваться</NavLink>
+            {translate(user.language, 'NoAccount')}
+              <NavLink to="/register">{translate(user.language, 'Register')}</NavLink>
             </p>
           </div>
         </form>
@@ -100,14 +102,14 @@ const Login = (props: any) => {
   );
 };
 
-const auth = (token: string) => {
+const authenticate = (token: string) => {
   return {
     type: "auth",
     payload: token,
   };
 };
 const mapDispatchToProps = {
-  auth,
+  authenticate,
 };
 
-export default connect(null, mapDispatchToProps)(Login);
+export default connect((state:any) => ({user: state.user}), mapDispatchToProps)(Login);

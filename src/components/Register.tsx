@@ -1,8 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Redirect, NavLink } from "react-router-dom";
+import { translate } from "../filters/translate";
 
-const Register = (props: any) => {
+const Register = ({authenticate, user, setToast}: any) => {
   const [auth, setAuth] = useState(false);
   let email = useRef<HTMLInputElement>(null);
   let password = useRef<HTMLInputElement>(null);
@@ -38,7 +39,7 @@ const Register = (props: any) => {
     }
     setnameClass(['validate']);
     if(!access) {
-      props.setToast("You need access our rules")
+      setToast("You need access our rules")
       return false
     }
     const form = document.querySelector("#form");
@@ -51,7 +52,7 @@ const Register = (props: any) => {
       .then((res) => res.json())
       .then((res) => {
         if (res.token) {
-          props.auth(res.token);
+          authenticate(res.token);
           setAuth(true);
         }
       });
@@ -62,7 +63,7 @@ const Register = (props: any) => {
       <div className="grey darken-1 empty-layout">
         <form className="card auth-card" onSubmit={submitHandler} id="form">
           <div className="card-content">
-            <span className="card-title">Домашняя бухгалтерия</span>
+            <span className="card-title">{translate(user.language, 'CRM_Title')}</span>
             <div className="input-field">
               <input
                 id="email"
@@ -84,7 +85,7 @@ const Register = (props: any) => {
                 className={passwordClasses.join(" ")}
                 ref={password}
               />
-              <label htmlFor="password">Пароль</label>
+              <label htmlFor="password">{translate(user.language, 'Password')}</label>
               {passwordClasses.includes("invalid") && (
                 <small className="helper-text invalid">Password</small>
               )}
@@ -97,7 +98,7 @@ const Register = (props: any) => {
                 className={nameClasses.join(" ")}
                 ref={name}
               />
-              <label htmlFor="name">Имя</label>
+              <label htmlFor="name">{translate(user.language, 'Name')}</label>
               {nameClasses.includes("invalid") && (
                 <small className="helper-text invalid">Name</small>
               )}
@@ -105,7 +106,7 @@ const Register = (props: any) => {
             <p>
               <label>
                 <input type="checkbox" onChange={accessHandler} />
-                <span>С правилами согласен</span>
+                <span>{translate(user.language, 'AcceptRules')}</span>
               </label>
             </p>
           </div>
@@ -115,14 +116,14 @@ const Register = (props: any) => {
                 className="btn waves-effect waves-light auth-submit"
                 type="submit"
               >
-                Зарегистрироваться
+                {translate(user.language, 'Register')}
                 <i className="material-icons right">send</i>
               </button>
             </div>
 
             <p className="center">
-              Уже есть аккаунт?
-              <NavLink to="/login">Войти!</NavLink>
+            {translate(user.language, 'HasAccount')}
+              <NavLink to="/login">{translate(user.language, 'Login')}!</NavLink>
             </p>
           </div>
         </form>
@@ -131,7 +132,7 @@ const Register = (props: any) => {
   );
 };
 
-const auth = (token: string) => {
+const authenticate = (token: string) => {
   return {
     type: "auth",
     payload: token,
@@ -147,8 +148,8 @@ const setToast = (message:string) => {
   }  
 }
 const mapDispatchToProps = {
-  auth,
+  authenticate,
   setToast
 };
 
-export default connect(null, mapDispatchToProps)(Register);
+export default connect((state:any) => ({user: state.user}), mapDispatchToProps)(Register);

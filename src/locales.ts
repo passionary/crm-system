@@ -116,7 +116,7 @@ export default {
         "Stayed": "Left",
         "RecordHasBeenCreated": "Record has been created",
         "NotEnoughMoney": "Not enough money",
-        "CRM_Title": "CRM by Vladilen",
+        "CRM_Title": "CRM-System",
         "Message_EmailRequired": "Email field is required",
         "Message_EmailValid": "Enter valid email",
         "Password": "Password",

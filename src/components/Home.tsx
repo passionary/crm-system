@@ -11,6 +11,7 @@ import LoadedComponent from './LoadedComponent'
 import { getCookie } from "../cookie";
 import { useDispatch, connect } from "react-redux";
 import DetailRecord from "./DetailRecord";
+import { translate } from "../filters/translate";
 
 interface IRoute {
   path: string;
@@ -82,7 +83,7 @@ const routes: IRoute[] = [
   },
 ];
 
-const Home = (props: any) => {  
+const Home = ({logout, user, location }: any) => {  
   let interval: any;
   
   const dateOptions = {
@@ -92,16 +93,16 @@ const Home = (props: any) => {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit'
-  }
-
-  const [date, setDate] = useState(new Intl.DateTimeFormat('ru-RU',dateOptions).format(new Date()));
+  }  
+  
+  const [date, setDate] = useState(new Intl.DateTimeFormat('en-EN',dateOptions).format(new Date()));
   const dispatch = useDispatch()
   useEffect(() => {
     var elems = document.querySelectorAll(".dropdown-trigger");
     M.Dropdown.init(elems, {});
-    // interval = setInterval(() => {
-    //   setDate(new Intl.DateTimeFormat('ru-RU',dateOptions).format(new Date()))
-    // },1000);
+    interval = setInterval(() => {
+      setDate(new Intl.DateTimeFormat(`en-EN`,dateOptions).format(new Date()))
+    },1000);
     fetch(`http://127.0.0.1:8000/api/user?token=${getCookie('token')}`)
     .then(res => res.json())
     .then(res => {      
@@ -120,7 +121,7 @@ const Home = (props: any) => {
   }, []);
   const [open, setOpen] = useState(true);
 
-  const [logout, setLogout] = useState(false);
+  const [slogout, setLogout] = useState(false);
 
   const [full, setFull] = useState(false);
 
@@ -129,7 +130,7 @@ const Home = (props: any) => {
   ) => {
     e.preventDefault();
 
-    props.logout();
+    logout();
     setLogout(true);
   };
   const navbarClasses: string[] = ["sidenav", "app-sidenav"];
@@ -146,7 +147,7 @@ const Home = (props: any) => {
     setOpen(!open);
     setFull(!full);
   };
-  if (logout) return <Preview />;
+  if (slogout) return <Preview />;
   return (
     <div>
       <div className="app-main-layout">
@@ -166,20 +167,20 @@ const Home = (props: any) => {
                   href="/"
                   data-target="dropdown"
                 >   
-                {props.user && props.user.username}             
+                {user && user.username}             
                   <i className="material-icons right">arrow_drop_down</i>
                 </a>
 
                 <ul id="dropdown" className="dropdown-content">
                   <li>
                     <NavLink to="/profile" className="black-text">
-                      <i className="material-icons">account_circle</i>Профиль
+                      <i className="material-icons">account_circle</i>{translate(user.language, 'ProfileTitle')}
                     </NavLink>
                   </li>
                   <li className="divider" tabIndex={-1}></li>
                   <li>
                     <a href="/" onClick={logoutHandler} className="black-text">
-                      <i className="material-icons">assignment_return</i>Выйти
+                      <i className="material-icons">assignment_return</i>{translate(user.language, 'Exit')}
                     </a>
                   </li>
                 </ul>
@@ -191,7 +192,7 @@ const Home = (props: any) => {
         <ul className={navbarClasses.join(" ")}>
           {links.map((link: ILink, index: number) => (
             <li
-              className={props.location.pathname === link.to ? "active" : ""}
+              className={location.pathname === link.to ? "active" : ""}
               key={index}
             >
               <NavLink

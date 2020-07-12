@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import Home from "./Home";
 import { Preview } from "./Preview";
 import { Loader } from "./Loader";
+import Login from "./Login";
 
 // interface IComponents {
 //   [key: string]: any;
@@ -45,7 +46,7 @@ class HOComponent extends React.Component<IProps, IState> {
     if (this.props.token === getCookie("token")) {
       return <Home {...this.props} />;
     } else {
-      return <Preview />;
+      return <Login />;
     }
   }
   componentWillMount() {

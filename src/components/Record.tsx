@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { connect, useDispatch } from "react-redux";
 import { translate } from "../filters/translate";
+import { setToast } from "../actions";
 
-const Record = ({ categories, bill, initBill, user }: any) => {
+const Record = ({ categories, bill, initBill, setToast, user }: any) => {
   setTimeout(() => {
     M.FormSelect.init(document.querySelector("#category-list") as any);
   }, 0);
@@ -23,7 +24,10 @@ const Record = ({ categories, bill, initBill, user }: any) => {
       description: document.querySelector<HTMLInputElement>("#description")!
         .value,
     };
-
+    if(bill && type === 'outcome' && bill.bill < amount) {
+      setToast(translate(user.language, "NotEnoughMoney"))
+      return
+    }
     fetch("http://127.0.0.1:8000/api/create-record", {
       method: "POST",
       headers: {
@@ -32,9 +36,12 @@ const Record = ({ categories, bill, initBill, user }: any) => {
       body: JSON.stringify(body),
     })
       .then((res) => res.text())
-      .then((res) => {
-        console.log(res);
-        
+      .then((res:any) => {        
+        if(res.errors) {
+          setToast(res.errors[0][0])
+          return
+        }
+        setToast(translate(user.language, "RecordHasBeenCreated"))
         const billUrl = `http://127.0.0.1:8000/api/set-bill?id=${bill.id}&type=${type}&amount=${amount}`;        
         
         fetch(billUrl)
@@ -115,6 +122,7 @@ const Record = ({ categories, bill, initBill, user }: any) => {
 };
 
 const mapDispatchToProps = {
+  setToast,
   initBill: (bill:any) => ({
     type: 'init-bill',
     payload: bill

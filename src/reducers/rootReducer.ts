@@ -1,6 +1,6 @@
 import redux from 'redux'
-import { setCookie, deleteCookie } from './cookie'
-import { dateOptions } from './utils/dateOptions'
+import { setCookie, deleteCookie } from '../utils/cookie'
+import { dateOptions } from '../utils/dateOptions'
 
 const initState = {
     token: null,
@@ -9,9 +9,7 @@ const initState = {
     user:{
         language: 'en'
     },
-    date: new Intl.DateTimeFormat('en-EN',dateOptions).format(new Date()),
-    loader: false,
-    serverData: {categories:[]}
+    date: new Intl.DateTimeFormat('en-EN',dateOptions).format(new Date())    
 }
 
 export const rootReducer:redux.Reducer<any,any> = (state:any = initState, action:any) => {
@@ -26,13 +24,13 @@ export const rootReducer:redux.Reducer<any,any> = (state:any = initState, action
             return {
                 ...state
             }
-        case 'break-loading':
-            return {
-                ...state, isLoading: false
-            }
         case 'loading':
             return {
                 ...state,isLoading: true
+            }
+        case 'break-loading':
+            return {
+                ...state, isLoading: false
             }
         case 'set-token':
             return {
@@ -41,15 +39,7 @@ export const rootReducer:redux.Reducer<any,any> = (state:any = initState, action
         case 'set-toast':
             return {
                 ...state, message: action.payload
-            }
-        case 'run-loader':
-            return {
-                ...state, loader: true
-            }
-        case 'stop-loader':
-            return {
-                ...state, loader: false
-            }
+            }        
         case 'init-bill':
             return {
                 ...state, bill: action.payload
@@ -61,11 +51,7 @@ export const rootReducer:redux.Reducer<any,any> = (state:any = initState, action
         case 'set-locale':
             return {
                 ...state, language: action.payload
-            }
-        case 'set-interval':
-            return {
-                ...state, date: action.payload
-            }
+            }        
         default:
             return state;
     }

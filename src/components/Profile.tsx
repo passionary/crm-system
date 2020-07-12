@@ -1,8 +1,9 @@
 import React, { useRef } from "react";
 import { connect } from "react-redux";
 import { translate } from '../filters/translate'
+import { setToast } from "../actions";
 
-const Profile = ({ user, initUser, setLocale }: any) => {
+const Profile = ({ user, initUser, setToast }: any) => {
   const username = useRef<HTMLInputElement>(null);      
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -15,6 +16,12 @@ const Profile = ({ user, initUser, setLocale }: any) => {
     )
       .then((res) => res.json())
       .then((res) => {
+        if(res.errors) {
+          setToast(translate(user.language,"Message_EnterName"))
+          return
+        }
+        
+        setToast(translate(user.language,"ProfileChange"))
         initUser(res);
       });
   };
@@ -51,17 +58,12 @@ const Profile = ({ user, initUser, setLocale }: any) => {
 };
 
 const mapDispatchToProps = {
+  setToast,
   initUser: (user: any) => {
     return {
       type: "init-user",
       payload: user,
     };
-  },
-  setLocale: (lang: string) => {
-    return {
-      type: 'set-locale',
-      payload: lang
-    }
   }
 };
 

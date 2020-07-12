@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { translate } from "../filters/translate";
+import { setToast } from "../actions";
 
-const Categories = ({categories, createCategory, editCategory, user}: any) => {
-  const [load, setLoad] = useState(false)  
-  
-  // const [current, setCurrent] = useState()  
-  
+const Categories = ({categories, createCategory, editCategory, user, setToast}: any) => {
   setTimeout(() => {M.FormSelect.init(document.querySelector('#category-list') as any)},0)
   const createSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -18,8 +15,8 @@ const Categories = ({categories, createCategory, editCategory, user}: any) => {
     })
     .then(res => res.json())
     .then(res => {
+      setToast(translate(user.language, "Category_HasBeenCreated"))
       createCategory(res)
-      setLoad(true)
     })
   }
   const editSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
@@ -32,17 +29,10 @@ const Categories = ({categories, createCategory, editCategory, user}: any) => {
     })
     .then(res => res.json())
     .then(res => {
-      editCategory(res)
-      
-      // createCategory(res)
-      // setLoad(true)
+      setToast(translate(user.language, "Category_HasBeenUpdated"))
+      editCategory(res)            
     })
-  }
-  // function selectChangeHandler(this:any,e: React.ChangeEvent<HTMLSelectElement>) {
-  //   const option = e.target.children[e.target.selectedIndex]    
-    
-  //   setCurrent(categories.find((c:any) => c.id == option.id))    
-  // }
+  }  
   return (
     <>
       <div className="page-title">
@@ -118,12 +108,7 @@ const Categories = ({categories, createCategory, editCategory, user}: any) => {
 };
 
 const mapDispatchToProps = {
-  fetchServerData: (data: any) => {
-    return {
-      type: 'fetchServerData',
-      payload: data
-    }
-  }
+  setToast
 }
 
 export default connect((state:any) => ({...state}), mapDispatchToProps)(Categories)

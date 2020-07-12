@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Redirect, NavLink } from "react-router-dom";
 import { translate } from "../filters/translate";
+import { authenticate, setToast } from '../actions'
 
 const Register = ({authenticate, user, setToast}: any) => {
   const [auth, setAuth] = useState(false);
@@ -132,21 +133,6 @@ const Register = ({authenticate, user, setToast}: any) => {
   );
 };
 
-const authenticate = (token: string) => {
-  return {
-    type: "auth",
-    payload: token,
-  };
-};
-const setToast = (message:string) => {
-  return (dispatch: any) => {
-    dispatch({
-      type: 'set-toast',
-      payload: message
-    })
-    M.toast({html: message})
-  }  
-}
 const mapDispatchToProps = {
   authenticate,
   setToast

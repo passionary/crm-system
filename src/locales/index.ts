@@ -65,10 +65,12 @@ export default {
         "NoUserWithEmail": "Пользователя с таким email не существует",
         "WrongPassword": "Неверный пароль",
         "EmailInUse": "Email уже занят",
+        "ProfileChange": "Ваш профиль был успешно изменен",
         "Error": "Ошибка"
     },
     'en':{
         "ProfileTitle": "Profile",
+        "ProfileChange": "Your profile was changed successfully",
         "Message_EnterName": "Enter name",
         "Update": "Update",
         "Create": "Create",

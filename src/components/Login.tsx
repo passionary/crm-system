@@ -3,8 +3,9 @@ import "materialize-css/dist/js/materialize.min.js";
 import { connect } from "react-redux";
 import { Redirect, NavLink } from "react-router-dom";
 import { translate } from "../filters/translate";
+import { authenticate, setToast } from '../actions'
 
-const Login = ({authenticate, user}: any) => {  
+const Login = ({authenticate, setToast, user}: any) => {  
   
   const [auth, setAuth] = useState(false);
   let email = useRef<HTMLInputElement>(null);
@@ -39,13 +40,17 @@ const Login = ({authenticate, user}: any) => {
       .then((res) => res.json())
       .then((res) => {
         if (res.token) {
+          setToast("You sign in!")
           authenticate(res.token);
           setAuth(true);
         }
       });
   };
 
-  if (auth) return <Redirect to="/" />;
+  if (auth) {    
+    return <Redirect to="/" />;
+  }
+
   return (
     <div>
       <div className="grey darken-1 empty-layout">
@@ -102,14 +107,9 @@ const Login = ({authenticate, user}: any) => {
   );
 };
 
-const authenticate = (token: string) => {
-  return {
-    type: "auth",
-    payload: token,
-  };
-};
 const mapDispatchToProps = {
   authenticate,
+  setToast
 };
 
 export default connect((state:any) => ({user: state.user}), mapDispatchToProps)(Login);

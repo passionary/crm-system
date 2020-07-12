@@ -54,6 +54,6 @@
   }
 }
 .loader {
-  display: block;
+  display: block !important;
   margin: 18.5% auto;  
 }

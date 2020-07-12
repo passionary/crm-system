@@ -5,13 +5,14 @@ import Categories from "./Categories";
 import History from "./History";
 import Planning from "./Planning";
 import Record from "./Record";
-import { Preview } from "./Preview";
 import Profile from "./Profile";
 import LoadedComponent from './LoadedComponent'
-import { getCookie } from "../cookie";
+import { getCookie } from "../utils/cookie";
 import { useDispatch, connect } from "react-redux";
 import DetailRecord from "./DetailRecord";
 import { translate } from "../filters/translate";
+import Login from "./Login";
+import { setToast } from "../actions";
 
 interface IRoute {
   path: string;
@@ -83,7 +84,7 @@ const routes: IRoute[] = [
   },
 ];
 
-const Home = ({logout, user, location }: any) => {  
+const Home = ({logout, user, location, setToast }: any) => {  
   let interval: any;
   
   const dateOptions = {
@@ -93,16 +94,11 @@ const Home = ({logout, user, location }: any) => {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit'
-  }  
-  
-  const [date, setDate] = useState(new Intl.DateTimeFormat('en-EN',dateOptions).format(new Date()));
+  }    
   const dispatch = useDispatch()
   useEffect(() => {
     var elems = document.querySelectorAll(".dropdown-trigger");
-    M.Dropdown.init(elems, {});
-    interval = setInterval(() => {
-      setDate(new Intl.DateTimeFormat(`en-EN`,dateOptions).format(new Date()))
-    },1000);
+    M.Dropdown.init(elems, {});    
     fetch(`http://127.0.0.1:8000/api/user?token=${getCookie('token')}`)
     .then(res => res.json())
     .then(res => {      
@@ -129,7 +125,7 @@ const Home = ({logout, user, location }: any) => {
     e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
   ) => {
     e.preventDefault();
-
+    setToast(translate(user.language, "Logout"))
     logout();
     setLogout(true);
   };
@@ -147,7 +143,7 @@ const Home = ({logout, user, location }: any) => {
     setOpen(!open);
     setFull(!full);
   };
-  if (slogout) return <Preview />;
+  if (slogout) return <Redirect to="/login" />;
   return (
     <div>
       <div className="app-main-layout">
@@ -157,7 +153,7 @@ const Home = ({logout, user, location }: any) => {
               <a href="/" onClick={menuOpenHandler}>
                 <i className="material-icons black-text">dehaze</i>
               </a>
-              <span className="black-text">{date}</span>
+              <span className="black-text">{new Date().toDateString()}</span>
             </div>
 
             <ul className="right hide-on-small-and-down">
@@ -225,5 +221,7 @@ const Home = ({logout, user, location }: any) => {
     </div>
   );
 };
-
-export default connect((state:any) => ({user:state.user}))(Home)
+const mapDispatchToProps = {
+  setToast
+}
+export default connect((state:any) => ({user:state.user}),mapDispatchToProps)(Home)

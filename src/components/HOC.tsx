@@ -1,9 +1,8 @@
 import React from "react";
-import { getCookie } from "../cookie";
+import { getCookie } from "../utils/cookie";
 import { connect } from "react-redux";
 import Home from "./Home";
-import { Preview } from "./Preview";
-import { Loader } from "./Loader";
+import { Loader } from "./RootLoader";
 import Login from "./Login";
 
 // interface IComponents {
@@ -38,7 +37,7 @@ class HOComponent extends React.Component<IProps, IState> {
 
   render() {
     if (this.state.logout) {
-      return <Preview />;
+      return <Login />;
     }
     if (this.props.isLoading) {
       return <Loader />;

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Loader } from "./Loader";
 import { connect } from "react-redux";
+import { setToast } from "../actions";
+import { translate } from "../filters/translate";
 
 const LoadedComponent = ({
   component,
@@ -8,9 +10,10 @@ const LoadedComponent = ({
   toDefine,
   initial,
   additional,
-  bill
-}: any) => {  
-  
+  user,
+  setToast,
+  bill,
+}: any) => {
   const [data, setData] = useState(initial);
   const [load, setLoad] = useState(true);
   let [render, setRender] = useState(0);
@@ -38,8 +41,12 @@ const LoadedComponent = ({
         );
 
         setLoad(false);
-                 
+
         setData(Object.assign({}, data, additional ? additional(res) : {}));
+      })
+      .catch((e) => {
+        setToast(translate(user.language, "CatchError"));
+        setLoad(false);
       });
   }, []);
   if (load) return <Loader />;
@@ -51,13 +58,11 @@ const LoadedComponent = ({
   });
 };
 
-// const mapDispatchToProps = {
-//   fetchServerData: (data: any) => {
-//     return {
-//       type: 'fetchServerData',
-//       payload: data
-//     }
-//   }
-// }
+const mapDispatchToProps = {
+  setToast,
+};
 
-export default connect((state: any) => ({ ...state }), null)(LoadedComponent);
+export default connect(
+  (state: any) => ({ ...state }),
+  mapDispatchToProps
+)(LoadedComponent);

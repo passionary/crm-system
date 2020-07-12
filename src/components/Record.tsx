@@ -24,9 +24,9 @@ const Record = ({ categories, bill, initBill, setToast, user }: any) => {
       description: document.querySelector<HTMLInputElement>("#description")!
         .value,
     };
-    if(bill && type === 'outcome' && bill.bill < amount) {
-      setToast(translate(user.language, "NotEnoughMoney"))
-      return
+    if (bill && type === "outcome" && bill.bill < amount) {
+      setToast(translate(user.language, "NotEnoughMoney"));
+      return;
     }
     fetch("http://127.0.0.1:8000/api/create-record", {
       method: "POST",
@@ -35,27 +35,28 @@ const Record = ({ categories, bill, initBill, setToast, user }: any) => {
       },
       body: JSON.stringify(body),
     })
-      .then((res) => res.text())
-      .then((res:any) => {        
-        if(res.errors) {
-          setToast(res.errors[0][0])
-          return
+      .then((res) => res.json())
+      .then((res: any) => {
+        if (res.errors) {
+          setToast(Object.values(res.errors)[0]);
+          return;
         }
-        setToast(translate(user.language, "RecordHasBeenCreated"))
-        const billUrl = `http://127.0.0.1:8000/api/set-bill?id=${bill.id}&type=${type}&amount=${amount}`;        
-        
+        setToast(translate(user.language, "RecordHasBeenCreated"));
+        const billUrl = `http://127.0.0.1:8000/api/set-bill?id=${bill.id}&type=${type}&amount=${amount}`;
+
         fetch(billUrl)
           .then((res) => res.json())
           .then((res) => {
-            initBill(res.bill)
+            initBill(res.bill);
           });
-      });
+      })
+      .catch((e) => setToast(translate(user.language, "CatchError")));
   };
 
   return (
     <>
       <div className="page-title">
-        <h3>{translate(user.language,'Menu_NewRecord')}</h3>
+        <h3>{translate(user.language, "Menu_NewRecord")}</h3>
       </div>
 
       <form onSubmit={submitHandler} className="form" id="record-create">
@@ -67,7 +68,7 @@ const Record = ({ categories, bill, initBill, setToast, user }: any) => {
               </option>
             ))}
           </select>
-          <label>{translate(user.language,'SelectCategory')}</label>
+          <label>{translate(user.language, "SelectCategory")}</label>
         </div>
 
         <p>
@@ -81,7 +82,7 @@ const Record = ({ categories, bill, initBill, setToast, user }: any) => {
                 setType(e.target.value)
               }
             />
-            <span>{translate(user.language,'Income')}</span>
+            <span>{translate(user.language, "Income")}</span>
           </label>
         </p>
 
@@ -96,24 +97,26 @@ const Record = ({ categories, bill, initBill, setToast, user }: any) => {
                 setType(e.target.value)
               }
             />
-            <span>{translate(user.language,'Outcome')}</span>
+            <span>{translate(user.language, "Outcome")}</span>
           </label>
         </p>
 
         <div className="input-field">
           <input name="amount" id="amount" type="number" />
-          <label htmlFor="amount">{translate(user.language,'Amount')}</label>
+          <label htmlFor="amount">{translate(user.language, "Amount")}</label>
           <span className="helper-text invalid">amount пароль</span>
         </div>
 
         <div className="input-field">
           <input name="description" id="description" type="text" />
-          <label htmlFor="description">{translate(user.language,'Description')}</label>
+          <label htmlFor="description">
+            {translate(user.language, "Description")}
+          </label>
           <span className="helper-text invalid">description пароль</span>
         </div>
 
         <button className="btn waves-effect waves-light" type="submit">
-        {translate(user.language,'Create')}
+          {translate(user.language, "Create")}
           <i className="material-icons right">send</i>
         </button>
       </form>
@@ -123,9 +126,12 @@ const Record = ({ categories, bill, initBill, setToast, user }: any) => {
 
 const mapDispatchToProps = {
   setToast,
-  initBill: (bill:any) => ({
-    type: 'init-bill',
-    payload: bill
-  })
-}
-export default connect((state: any) => ({ bill: state.bill, user:state.user }),mapDispatchToProps)(Record);
+  initBill: (bill: any) => ({
+    type: "init-bill",
+    payload: bill,
+  }),
+};
+export default connect(
+  (state: any) => ({ bill: state.bill, user: state.user }),
+  mapDispatchToProps
+)(Record);

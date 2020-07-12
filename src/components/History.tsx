@@ -4,8 +4,7 @@ import { Pie } from "react-chartjs-2";
 import { connect } from "react-redux";
 import { translate } from "../filters/translate";
 
-const History = ({ records, categories, user }: any) => {  
-  
+const History = ({ records, categories, user }: any) => {
   const dateOptions = {
     day: "2-digit",
     month: "long",
@@ -29,12 +28,12 @@ const History = ({ records, categories, user }: any) => {
           "rgba(255, 159, 64, 0.2)",
         ],
         borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)'
+          "rgba(255, 99, 132, 1)",
+          "rgba(54, 162, 235, 1)",
+          "rgba(255, 206, 86, 1)",
+          "rgba(75, 192, 192, 1)",
+          "rgba(153, 102, 255, 1)",
+          "rgba(255, 159, 64, 1)",
         ],
         borderWidth: 1,
         data: categories.map((cat: any) => {
@@ -42,7 +41,7 @@ const History = ({ records, categories, user }: any) => {
             if (i.type === "outcome") return (p += parseInt(i.amount));
             return (p -= parseInt(i.amount));
           }, 0);
-          return amount > 0 ? amount : `+${Math.abs(amount)}` 
+          return amount > 0 ? amount : `+${Math.abs(amount)}`;
         }),
       },
     ],
@@ -50,7 +49,7 @@ const History = ({ records, categories, user }: any) => {
   return (
     <>
       <div className="page-title">
-        <h3>{translate(user.language,'History_Title')}</h3>
+        <h3>{translate(user.language, "History_Title")}</h3>
       </div>
 
       <div className="history-chart">
@@ -62,11 +61,11 @@ const History = ({ records, categories, user }: any) => {
           <thead>
             <tr>
               <th>#</th>
-              <th>{translate(user.language,'Amount')}</th>
-              <th>{translate(user.language,'Date')}</th>
-              <th>{translate(user.language,'Category')}</th>
-              <th>{translate(user.language,'Type')}</th>
-              <th>{translate(user.language,'Open')}</th>
+              <th>{translate(user.language, "Amount")}</th>
+              <th>{translate(user.language, "Date")}</th>
+              <th>{translate(user.language, "Category")}</th>
+              <th>{translate(user.language, "Type")}</th>
+              <th>{translate(user.language, "Open")}</th>
             </tr>
           </thead>
 
@@ -87,7 +86,10 @@ const History = ({ records, categories, user }: any) => {
                       rec.type === "income" ? "green" : "red"
                     }`}
                   >
-                    {translate(user.language,rec.type === "income" ? "Income" : "Outcome")}
+                    {translate(
+                      user.language,
+                      rec.type === "income" ? "Income" : "Outcome"
+                    )}
                   </span>
                 </td>
                 <td>
@@ -104,4 +106,4 @@ const History = ({ records, categories, user }: any) => {
   );
 };
 
-export default connect((state:any) => ({user: state.user}),null)(History)
+export default connect((state: any) => ({ user: state.user }), null)(History);

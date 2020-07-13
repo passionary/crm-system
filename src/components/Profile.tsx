@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { connect } from "react-redux";
 import { translate } from "../filters/translate";
-import { setToast } from "../actions";
+import { setToast, initUser } from "../actions";
 
 const Profile = ({ user, initUser, setToast }: any) => {
   const username = useRef<HTMLInputElement>(null);
@@ -62,12 +62,7 @@ const Profile = ({ user, initUser, setToast }: any) => {
 
 const mapDispatchToProps = {
   setToast,
-  initUser: (user: any) => {
-    return {
-      type: "init-user",
-      payload: user,
-    };
-  },
+  initUser
 };
 
 export default connect(

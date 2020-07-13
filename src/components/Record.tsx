@@ -21,6 +21,7 @@ const Record = ({ categories, bill, initBill, setToast, user }: any) => {
       category_id: curCategory.id,
       type,
       amount,
+      user_id: document.querySelector<HTMLInputElement>('#user_id')!.value,
       description: document.querySelector<HTMLInputElement>("#description")!
         .value,
     };
@@ -37,6 +38,8 @@ const Record = ({ categories, bill, initBill, setToast, user }: any) => {
     })
       .then((res) => res.json())
       .then((res: any) => {
+        console.log(res);
+        
         if (res.errors) {
           setToast(Object.values(res.errors)[0]);
           return;
@@ -70,7 +73,7 @@ const Record = ({ categories, bill, initBill, setToast, user }: any) => {
           </select>
           <label>{translate(user.language, "SelectCategory")}</label>
         </div>
-
+        <input name="user_id" type="hidden" id="user_id" value={user && user.id} />
         <p>
           <label>
             <input
@@ -81,7 +84,7 @@ const Record = ({ categories, bill, initBill, setToast, user }: any) => {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setType(e.target.value)
               }
-            />
+            />            
             <span>{translate(user.language, "Income")}</span>
           </label>
         </p>

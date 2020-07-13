@@ -58,12 +58,16 @@ const Register = ({ authenticate, user, setToast }: any) => {
     })
       .then((res) => res.json())
       .then((res) => {
+        console.log(res);
+        
         if (res.errors) {
           setToast(Object.values(res.errors)[0]);
           return;
         }
-        if (res.token) {
-          authenticate(res.token);
+        if (res.api_token) {
+          setToast("You registered successfully!");
+          setAuth(true);
+          authenticate(res);
           setAuth(true);
         }
       })

@@ -3,6 +3,7 @@ import { getCookie } from "../utils/cookie";
 import { connect } from "react-redux";
 import Home from "./Home";
 import { Loader } from "./RootLoader";
+import { initUser } from '../actions'
 import Login from "./Login";
 
 // interface IComponents {
@@ -17,6 +18,7 @@ interface IState {
 
 interface IProps {
   toLoad: string;
+  initUser?:any;
   children?: any;
   token?: string;
   logout?: any;
@@ -59,8 +61,9 @@ class HOComponent extends React.Component<IProps, IState> {
           this.props.breakLoader();
         }, 1000);
 
-        if (data && data.token) {
-          this.props.setToken(data.token);
+        if (data && data.api_token) {
+          this.props.setToken(data.api_token);
+          this.props.initUser(data)
         }
       })
       .catch((e) => {
@@ -81,6 +84,7 @@ interface IMap {
   setToken: any;
   loading: any;
   breakLoader: any;
+  initUser: any;
 }
 const breakLoader = () => {
   return (dispatch: any) => {
@@ -123,6 +127,7 @@ const mapDispatchToProps: IMap = {
   logout,
   setToken,
   loading,
+  initUser,
   breakLoader,
 };
 const mapStateToProps = (state: any) => ({

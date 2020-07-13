@@ -25,11 +25,11 @@ interface ILink {
   innerText: string;
 }
 const links: ILink[] = [
-  { to: "/", innerText: "Счет" },
-  { to: "/history", innerText: "История" },
-  { to: "/planning", innerText: "Планирование" },
-  { to: "/new-record", innerText: "Новая запись" },
-  { to: "/categories", innerText: "Категории" },
+  { to: "/", innerText: "Bill" },
+  { to: "/history", innerText: "Menu_History" },
+  { to: "/planning", innerText: "Menu_Planning" },
+  { to: "/new-record", innerText: "Menu_NewRecord" },
+  { to: "/categories", innerText: "Menu_Categories" },
 ];
 
 const routes: IRoute[] = [
@@ -43,29 +43,31 @@ const routes: IRoute[] = [
   {
     path: "/history",
     exact: true,
-    component: (props:any) => {
-      return <LoadedComponent {...props} component={History} url="http://127.0.0.1:8000/api/history" toDefine={[['records','records'],['categories','categories']]} initial={{records:[], categories:[]}} />
-    }
+    component: connect((state:any) => ({...state}))((props:any) => {
+      const url = `http://127.0.0.1:8000/api/history?user_id=${props.user && props.user.id}`
+      return <LoadedComponent {...props} component={History} url={url} toDefine={[['records','records'],['categories','categories']]} initial={{records:[], categories:[]}} />
+    })
   },
   {
     path: "/planning",
     exact: true,
-    component: (props:any) => {
-      return <LoadedComponent {...props} component={Planning} url="http://127.0.0.1:8000/api/categories" toDefine={[['categories','']]} initial={{categories:[]}} />
-    }
+    component: connect((state:any) => ({...state}))((props:any) => {
+      const url = `http://127.0.0.1:8000/api/categories?user_id=${props.user && props.user.id}`;
+      return <LoadedComponent {...props} component={Planning} url={url} toDefine={[['categories','']]} initial={{categories:[]}} />
+    })
   },
   {
     path: "/new-record",
     exact: true,
-    component: (props:any) => {
-      return <LoadedComponent {...props} component={Record} url="http://127.0.0.1:8000/api/categories" toDefine={[['categories','']]} initial={{categories:[]}} />
-    }
+    component: connect((state:any) => ({...state}))((props:any) => {
+      const url = `http://127.0.0.1:8000/api/categories?user_id=${props.user && props.user.id}`;  
+      return <LoadedComponent {...props} component={Record} url={url} toDefine={[['categories','']]} initial={{categories:[]}} />
+    })
   },
   {
     path: "/record/:id",
     exact: true,
-    component: ({match}:any) => {      
-      
+    component: ({match}:any) => {
       const url = `http://127.0.0.1:8000/api/record?id=${match.params && match.params.id}`
       return <LoadedComponent {...match}  component={DetailRecord} url={url} toDefine={[['record','']]} initial={{record:{}}} />
     }
@@ -73,9 +75,10 @@ const routes: IRoute[] = [
   {
     path: "/categories",
     exact: true,
-    component: (props:any) => {
-      return <LoadedComponent {...props } component={Categories} url="http://127.0.0.1:8000/api/categories" toDefine={[['categories','']]} initial={{categories:[]}} />
-    }
+    component: connect((state:any) => ({...state}))((props:any) => {      
+      const url = `http://127.0.0.1:8000/api/categories?user_id=${props.user && props.user.id}`;  
+      return <LoadedComponent {...props } component={Categories} url={url} toDefine={[['categories','']]} initial={{categories:[]}} />
+    })
   },
   {
     path: "/profile",
@@ -196,7 +199,7 @@ const Home = ({logout, user, location, setToast }: any) => {
                 className="waves-effect waves-orange pointer"
                 key={index + "-nav-link"}
               >
-                {link.innerText}
+                {translate(user.language,link.innerText)}
               </NavLink>
             </li>
           ))}

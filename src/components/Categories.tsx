@@ -74,7 +74,12 @@ const Categories = ({
                     {translate(user.language, "Message_CategoryTitle")}
                   </span>
                 </div>
-
+                <input
+                  name="user_id"
+                  type="hidden"
+                  id="user_id"
+                  value={user && user.id}
+                />
                 <div className="input-field">
                   <input name="limit" id="limit" type="number" />
                   <label htmlFor="limit">
@@ -111,7 +116,11 @@ const Categories = ({
                   </select>
                   <label>{translate(user.language, "SelectCategory")}</label>
                 </div>
-
+                <input
+                  name="user_id"
+                  type="hidden"
+                  value={user && user.id}
+                />
                 <div className="input-field">
                   <input name="name" type="text" id="name" />
                   <label htmlFor="name">

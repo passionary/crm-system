@@ -3,7 +3,7 @@ import "materialize-css/dist/js/materialize.min.js";
 import { connect } from "react-redux";
 import { Redirect, NavLink } from "react-router-dom";
 import { translate } from "../filters/translate";
-import { authenticate, setToast } from "../actions";
+import { authenticate, setToast, initUser } from "../actions";
 
 const Login = ({ authenticate, setToast, user }: any) => {
   const [auth, setAuth] = useState(false);
@@ -41,9 +41,10 @@ const Login = ({ authenticate, setToast, user }: any) => {
           setToast(Object.values(res.errors)[0]);
           return;
         }
-        if (res.token) {
+        if (res.api_token) {
           setToast("You sign in!");
-          authenticate(res.token);
+          authenticate(res);          
+          initUser(res)
           setAuth(true);
         }
       })
@@ -118,6 +119,7 @@ const Login = ({ authenticate, setToast, user }: any) => {
 const mapDispatchToProps = {
   authenticate,
   setToast,
+  initUser
 };
 
 export default connect(

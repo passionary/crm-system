@@ -61,7 +61,7 @@ const Bill = ({ rates, date, bill, user }: any) => {
                   </thead>
 
                   <tbody>
-                    {Object.keys(rates).map((rate: any, index: number) => (
+                    {rates && Object.keys(rates).map((rate: any, index: number) => (
                       <tr key={index}>
                         <td>{rate}</td>
                         <td>{rates[rate]}</td>

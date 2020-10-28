@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import firebase from 'firebase/app';
 import "materialize-css/dist/js/materialize.min.js";
 import { connect } from "react-redux";
 import { Redirect, NavLink } from "react-router-dom";
@@ -14,7 +15,7 @@ const Login = ({ authenticate, setToast, user }: any) => {
   useEffect(() => {
     M.updateTextFields();
   }, []);
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!/[0-9a-z]+@[a-z]/.test(email.current!.value)) {
@@ -31,24 +32,33 @@ const Login = ({ authenticate, setToast, user }: any) => {
     const form = document.querySelector("#form");
 
     if (!form) return;
-    fetch("http://127.0.0.1:8000/api/login", {
-      method: "POST",
-      body: new FormData(form as HTMLFormElement),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.errors) {
-          setToast(Object.values(res.errors)[0]);
-          return;
-        }
-        if (res.api_token) {
-          setToast("You sign in!");
-          authenticate(res);          
-          initUser(res)
-          setAuth(true);
-        }
-      })
-      .catch((e) => setToast(translate(user.language, "CatchError")));
+    console.log(email.current!.value, password.current!.value);
+    
+    try {
+      await firebase.auth().signInWithEmailAndPassword(email.current!.value, password.current!.value);
+    }catch(e) {
+      setToast("ERROR[]: invalid authorisation");
+      throw e;
+    }
+    setAuth(true);
+    // fetch("http://127.0.0.1:8000/api/login", {
+    //   method: "POST",
+    //   body: new FormData(form as HTMLFormElement),
+    // })
+      // .then((res) => res.json())
+      // .then((res) => {
+        // if (res.errors) {
+          // setToast(Object.values(res.errors)[0]);
+          // return;
+        // }
+        // if (res.api_token) {
+      //     setToast("You sign in!");
+      //     authenticate(res);
+      //     initUser(res)
+      //     setAuth(true);
+      //   }
+      // })
+      // .catch((e) => setToast(translate(user.language, "CatchError")));
   };
 
   if (auth) {

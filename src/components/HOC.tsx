@@ -43,12 +43,8 @@ class HOComponent extends React.Component<IProps, IState> {
     }
     if (this.props.isLoading) {
       return <Loader />;
-    }
-    if (this.props.token === getCookie("token")) {
-      return <Home {...this.props} />;
-    } else {
-      return <Login />;
-    }
+    }    
+    return <Home {...this.props} />;
   }
   componentWillMount() {
     this.props.loading();

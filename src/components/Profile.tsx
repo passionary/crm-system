@@ -9,22 +9,25 @@ const Profile = ({ user, initUser, setToast }: any) => {
     e.preventDefault();
     const lang = document.querySelector<HTMLInputElement>("#lang")!.checked;
 
-    fetch(
-      `http://127.0.0.1:8000/api/change-name?id=${user.id}&username=${
-        username.current!.value
-      }&lang=${lang ? "ru" : "en"}`
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.errors) {
-          setToast(translate(user.language, "Message_EnterName"));
-          return;
-        }
+    // fetch(
+    //   `http://127.0.0.1:8000/api/change-name?id=${user.id}&username=${
+    //     username.current!.value
+    //   }&lang=${lang ? "ru" : "en"}`
+    // )
+    //   .then((res) => res.json())
+    //   .then((res) => {
+    //     if (res.errors) {
+          // setToast(translate(user.language, "Message_EnterName"));
+          // return;
+        // }
 
         setToast(translate(user.language, "ProfileChange"));
-        initUser(res);
-      })
-      .catch((e) => setToast(translate(user.language, "Message_EnterName")));
+        initUser({
+          ...user,
+          language: lang ? "ru" : "en"
+        });
+      // })
+      // .catch((e) => setToast(translate(user.language, "Message_EnterName")));
   };
   setTimeout(() => {
     M.updateTextFields();

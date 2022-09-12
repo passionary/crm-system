@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
 import { connect } from "react-redux";
 import { translate } from "../filters/translate";
+import firebase from "firebase";
+import { setInfo } from "../actions";
 
-const History = ({ records, categories, user }: any) => {
+const History = ({ records, setInfo, categories, user }: any) => {
+  console.log(categories, 'CATEGORIES');
+  const uid = firebase.auth().currentUser!.uid;
+  
   const dateOptions = {
     day: "2-digit",
     month: "long",
@@ -13,9 +18,18 @@ const History = ({ records, categories, user }: any) => {
     minute: "2-digit",
     second: "2-digit",
   };
+  useEffect(() => {
+    (async function() {
+      const request = await firebase.database().ref(`users/${uid}/records`).get();
+
+      if(request.exists()) {
+        setInfo({key: 'records', value: Object.keys(request.val()).map((key: any) => ({id: key, ...request.val()[key]}))});
+      }
+    })();
+  }, []);
 
   const data = {
-    labels: categories.map((cat: any) => cat.name),
+    labels: categories.map((cat: any) => cat.title),
     datasets: [
       {
         label: "Расходы по категориям",
@@ -36,12 +50,17 @@ const History = ({ records, categories, user }: any) => {
           "rgba(255, 159, 64, 1)",
         ],
         borderWidth: 1,
-        data: categories.map((cat: any) => {
-          const amount = cat.records.reduce((p: any, i: any) => {
-            if (i.type === "outcome") return (p += parseInt(i.amount));
-            return (p -= parseInt(i.amount));
-          }, 0);
-          return amount > 0 ? amount : `+${Math.abs(amount)}`;
+        data: categories.map(async (cat: any) => {
+          const request = await firebase.database().ref(`users/${uid}/records`).get();
+          if(request.exists()) {
+            const records = Object.values(request.val()).filter((rec: any) => rec.categoryId == cat.id);
+          
+            const amount: any = records.reduce((p: any, i: any) => {
+              if (i.type === "outcome") return (p += parseInt(i.amount));
+              return (p -= parseInt(i.amount));
+            }, 0);
+            return amount > 0 ? amount : `+${Math.abs(amount)}`;
+          }
         }),
       },
     ],
@@ -81,15 +100,15 @@ const History = ({ records, categories, user }: any) => {
 
           <tbody>
             {records.map((rec: any, index: number) => (
-              <tr key={rec.id}>
+              <tr key={index}>
                 <td>{index + 1}</td>
                 <td>{rec.amount}</td>
                 <td>
-                  {rec.created_at
+                  {/* {rec.created_at
                     .replace(rec.created_at.slice(-8), "")
-                    .replace(/T/, " ")}
+                    .replace(/T/, " ")} */}
                 </td>
-                <td>{rec.category.name}</td>
+                <td>{rec.categoryTitle}</td>
                 <td>
                   <span
                     className={`white-text badge ${
@@ -116,4 +135,4 @@ const History = ({ records, categories, user }: any) => {
   );
 };
 
-export default connect((state: any) => ({ user: state.user }), null)(History);
+export default connect((state: any) => ({ ...state }), { setInfo })(History);

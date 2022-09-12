@@ -9,6 +9,8 @@ const initState = {
     user:{
         language: 'en'
     },
+    categories: [],
+    records: [],
     date: new Intl.DateTimeFormat('en-EN',dateOptions).format(new Date())    
 }
 
@@ -51,7 +53,11 @@ export const rootReducer:redux.Reducer<any,any> = (state:any = initState, action
         case 'set-locale':
             return {
                 ...state, language: action.payload
-            }        
+            }
+        case 'set-info':
+            return {
+                ...state, [action.payload.key]: action.payload.value
+            }
         default:
             return state;
     }

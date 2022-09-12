@@ -13,6 +13,7 @@ import DetailRecord from "./DetailRecord";
 import { translate } from "../filters/translate";
 import Login from "./Login";
 import { setToast } from "../actions";
+import firebase from 'firebase';
 
 interface IRoute {
   path: string;
@@ -37,15 +38,14 @@ const routes: IRoute[] = [
     path: "/",
     exact: true,
     component: (props:any) => {
-      return (<LoadedComponent {...props} component={Bill} url={`http://data.fixer.io/api/latest?access_key=${process.env.REACT_APP_FIXER}&symbols=KZT,USD,EUR`} toDefine={[['rates','rates'],['date','date']]} initial={{rates:{},date:'',base:0}} />)
+      return (<LoadedComponent {...props} component={Bill} isHttpSource={true} url={`https://api.apilayer.com/fixer/latest?symbols=KZT%2CUSD%2CEUR&base=EUR`} toDefine={[['rates','rates'],['date','date']]} initial={{rates:{},date:'',base:0}} />)
     }
   },
   {
     path: "/history",
     exact: true,
     component: connect((state:any) => ({...state}))((props:any) => {
-      const url = `http://127.0.0.1:8000/api/history?user_id=${props.user && props.user.id}`
-      return <LoadedComponent {...props} component={History} url={url} toDefine={[['records','records'],['categories','categories']]} initial={{records:[], categories:[]}} />
+      return <LoadedComponent {...props} component={History} url={'records'} toDefine={[['records','records'],['categories','categories']]} initial={{records:[], categories:[]}} />
     })
   },
   {
@@ -60,8 +60,7 @@ const routes: IRoute[] = [
     path: "/new-record",
     exact: true,
     component: connect((state:any) => ({...state}))((props:any) => {
-      const url = `http://127.0.0.1:8000/api/categories?user_id=${props.user && props.user.id}`;  
-      return <LoadedComponent {...props} component={Record} url={url} toDefine={[['categories','']]} initial={{categories:[]}} />
+      return <LoadedComponent {...props} component={Record} url={'records'} toDefine={[['categories','']]} initial={{categories:[]}} />
     })
   },
   {
@@ -69,15 +68,14 @@ const routes: IRoute[] = [
     exact: true,
     component: ({match}:any) => {
       const url = `http://127.0.0.1:8000/api/record?id=${match.params && match.params.id}`
-      return <LoadedComponent {...match}  component={DetailRecord} url={url} toDefine={[['record','']]} initial={{record:{}}} />
+      return <LoadedComponent {...match}  component={DetailRecord} url={''} toDefine={[['record','']]} initial={{record:{}}} />
     }
   },
   {
     path: "/categories",
     exact: true,
     component: connect((state:any) => ({...state}))((props:any) => {      
-      const url = `http://127.0.0.1:8000/api/categories?user_id=${props.user && props.user.id}`;  
-      return <LoadedComponent {...props } component={Categories} url={url} toDefine={[['categories','']]} initial={{categories:[]}} />
+      return <LoadedComponent {...props } component={Categories} url={'categories'} toDefine={[['categories','']]} initial={{categories:[]}} />
     })
   },
   {
@@ -101,19 +99,47 @@ const Home = ({logout, user, location, setToast }: any) => {
   const dispatch = useDispatch()
   useEffect(() => {
     var elems = document.querySelectorAll(".dropdown-trigger");
-    M.Dropdown.init(elems, {});    
-    fetch(`http://127.0.0.1:8000/api/user?token=${getCookie('token')}`)
-    .then(res => res.json())
-    .then(res => {      
-      dispatch({
-        type: 'init-bill',
-        payload: res.bill
-      })
-      dispatch({
-        type: 'init-user',
-        payload: res
-      })
-    })
+    M.Dropdown.init(elems, {});
+    try {
+      const user = firebase.auth().currentUser as any;
+
+      if(!user) {
+        throw new Error('USER NOT AUTHORIZED');
+      }
+      firebase.database().ref(`users/${user.uid}`).get().then(snapshot => {
+        if(snapshot.exists()) {
+          const value = snapshot.val();
+          const user = value.info;
+
+          dispatch({
+            type: 'init-bill',
+            payload: user.amount
+          });
+          dispatch({
+            type: 'init-user',
+            payload: {
+              language: 'en',
+              ...user
+            }
+          });
+        }
+      });
+    } catch(error) {
+      setLogout(true);
+    }
+    
+    // fetch(`http://127.0.0.1:8000/api/user?token=${getCookie('token')}`)
+    // .then(res => res.json())
+    // .then(res => {      
+    //   dispatch({
+    //     type: 'init-bill',
+    //     payload: res.bill
+    //   })
+    //   dispatch({
+    //     type: 'init-user',
+    //     payload: res
+    //   })
+    // })
     return () => {
       clearInterval(interval);
     };
@@ -124,11 +150,12 @@ const Home = ({logout, user, location, setToast }: any) => {
 
   const [full, setFull] = useState(false);
 
-  const logoutHandler = (
+  const logoutHandler = async (
     e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
   ) => {
     e.preventDefault();
-    setToast(translate(user.language, "Logout"))
+    await firebase.auth().signOut();
+    setToast(translate(user.language, "Logout"));
     logout();
     setLogout(true);
   };
@@ -146,7 +173,9 @@ const Home = ({logout, user, location, setToast }: any) => {
     setOpen(!open);
     setFull(!full);
   };
-  if (slogout) return <Redirect to="/login" />;
+  if (slogout) {
+    return <Redirect to="/login" />;
+  }
   return (
     <div>
       <div className="app-main-layout">
@@ -166,7 +195,7 @@ const Home = ({logout, user, location, setToast }: any) => {
                   href="/"
                   data-target="dropdown"
                 >   
-                {user && user.username}             
+                {user && user.name}             
                   <i className="material-icons right">arrow_drop_down</i>
                 </a>
 

@@ -3,8 +3,13 @@ import { connect } from "react-redux";
 import { getCurrencySymbol } from "../utils/getCurrencySymbol";
 import { translate } from "../filters/translate";
 import { NavLink } from "react-router-dom";
+import firebase from "firebase";
 
-const Planning = ({ categories, bill, user }: any) => {
+const Planning = ({ categories, records, bill, user }: any) => {
+  console.log(records, 'RECORDS PLANNING');
+  
+  const uid = firebase.auth().currentUser!.uid;
+
   useEffect(() => {
     let elems: any;
     setTimeout(() => {
@@ -42,13 +47,13 @@ const Planning = ({ categories, bill, user }: any) => {
     <>
       <div className="page-title">
         <h3>{translate(user.language, "Menu_Planning")}</h3>
-        <h4>{bill && getCurrencySymbol(bill.bill, "RUB")}</h4>
+        <h4>{bill && getCurrencySymbol(bill, "KZT")}</h4>
       </div>
 
       <section>
         {categories && categories.length ? (
           categories.map((cat: any) => {
-            const amount = total(cat.records);
+            const amount = total(records);
             const percent = (100 * amount) / cat.limit;
             const progress = percent > 100 ? 100 : percent;
             const progressColor =
@@ -60,12 +65,12 @@ const Planning = ({ categories, bill, user }: any) => {
             return (
               <div key={cat.id}>
                 <p>
-                  <strong>{cat.name}:</strong>
+                  <strong>{cat.title}:</strong>
                   {amount > 0
-                    ? getCurrencySymbol(amount, "RUB")
-                    : `+${getCurrencySymbol(Math.abs(amount), "RUB")}`}{" "}
+                    ? getCurrencySymbol(amount, "KZT")
+                    : `+${getCurrencySymbol(Math.abs(amount), "KZT")}`}{" "}
                   {translate(user.language, "Of")}{" "}
-                  {getCurrencySymbol(cat.limit, "RUB")}
+                  {getCurrencySymbol(cat.limit, "KZT")}
                 </p>
                 <div className="progress tooltipped" data-tooltipp={tooltipp}>
                   <div
@@ -91,6 +96,6 @@ const Planning = ({ categories, bill, user }: any) => {
 };
 
 export default connect(
-  (state: any) => ({ bill: state.bill, user: state.user }),
+  (state: any) => ({ ...state }),
   null
 )(Planning);

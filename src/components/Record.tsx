@@ -2,26 +2,37 @@ import React, { useState, useEffect, useRef } from "react";
 import { connect, useDispatch } from "react-redux";
 import { translate } from "../filters/translate";
 import { setToast } from "../actions";
+import firebase from "firebase";
 
 const Record = ({ categories, bill, initBill, setToast, user }: any) => {
+  console.log(categories, 'CATEGORIES RECORD');
+  const categoryRef = useRef<HTMLSelectElement>(null);
+  
   setTimeout(() => {
     M.FormSelect.init(document.querySelector("#category-list") as any);
   }, 0);
   const dispatch = useDispatch();
   const [type, setType] = useState("");
-  const category = useRef<HTMLSelectElement>(null);
-
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
-    const curCategory = category.current!.children[
-      category.current!.selectedIndex
-    ] as any;
-    const amount = document.querySelector<HTMLInputElement>("#amount")!.value;
+  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {    
     e.preventDefault();
+    
+    const uid = firebase.auth().currentUser!.uid;
+    const curCategory = categoryRef.current!.children[
+      categoryRef.current!.selectedIndex
+    ] as any;
+    const categoryId = curCategory.id;
+    const amount = document.querySelector<HTMLInputElement>("#amount")!.value;
+    const description = document.querySelector<HTMLInputElement>("#description")!.value;
+    const instance = await firebase.database().ref(`users/${uid}/records`).push({
+      categoryId, categoryTitle: curCategory.value, type, amount, description
+    });
+    
+
+    console.log(curCategory.id, "CATEGORY REF");
+
     const body = {
-      category_id: curCategory.id,
       type,
       amount,
-      user_id: document.querySelector<HTMLInputElement>('#user_id')!.value,
       description: document.querySelector<HTMLInputElement>("#description")!
         .value,
     };
@@ -64,10 +75,10 @@ const Record = ({ categories, bill, initBill, setToast, user }: any) => {
 
       <form onSubmit={submitHandler} className="form" id="record-create">
         <div className="input-field">
-          <select id="category-list" name="category" ref={category}>
+          <select ref={categoryRef} id="category-list" name="category">
             {categories.map((cat: any) => (
               <option key={cat.id} id={cat.id}>
-                {cat.name}
+                {cat.title}
               </option>
             ))}
           </select>
@@ -135,6 +146,6 @@ const mapDispatchToProps = {
   }),
 };
 export default connect(
-  (state: any) => ({ bill: state.bill, user: state.user }),
+  (state: any) => ({ ...state }),
   mapDispatchToProps
 )(Record);

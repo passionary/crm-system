@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Redirect, NavLink } from "react-router-dom";
 import { translate } from "../filters/translate";
 import { authenticate, setToast } from "../actions";
+import firebase from "firebase";
 
 const Register = ({ authenticate, user, setToast }: any) => {
   const [auth, setAuth] = useState(false);
@@ -22,7 +23,7 @@ const Register = ({ authenticate, user, setToast }: any) => {
   const accessHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAccess(!access);
   };
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!/[0-9a-z]+@[a-z]/.test(email.current!.value)) {
@@ -30,7 +31,7 @@ const Register = ({ authenticate, user, setToast }: any) => {
       return false;
     }
     setEmailClass(["validate"]);
-    if (password.current!.value.length < 3) {
+    if (password.current!.value.length < 6) {
       setPasswordClass([...passwordClasses, "invalid"]);
       return false;
     }
@@ -52,26 +53,53 @@ const Register = ({ authenticate, user, setToast }: any) => {
     const form = document.querySelector("#form");
 
     if (!form) return;
-    fetch("http://127.0.0.1:8000/api/registr", {
-      method: "POST",
-      body: new FormData(form as HTMLFormElement),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
+    try {
+      const register = await firebase.auth().createUserWithEmailAndPassword(email.current!.value, password.current!.value);
+
+      if(register.user) {
+        await firebase.database().ref(`users/${register.user.uid}/info`).set({
+          name: name.current!.value,
+          email: email.current!.value,
+          amount: amount.current!.value
+        });
+        setToast("You registered successfully!");
+        setAuth(true);
+      }
+      else {
+        throw new Error('EmailInUse');
+      }
+    } catch(e) {
+      const error = e as {
+        a: any,
+        code: string,
+        message: string
+      };
+      const errors = {
+        "auth/email-already-in-use": "EmailInUse"
+      } as any
+      const message = errors[error.code] || "EmailInUse";
+      setToast(translate(user.language, message));
+    }
+
+    // fetch("http://127.0.0.1:8000/api/registr", {
+    //   method: "POST",
+    //   body: new FormData(form as HTMLFormElement),
+    // })
+    //   .then((res) => res.json())
+    //   .then((res) => {
+    //     console.log(res);
         
-        if (res.errors) {
-          setToast(Object.values(res.errors)[0]);
-          return;
-        }
-        if (res.api_token) {
-          setToast("You registered successfully!");
-          setAuth(true);
-          authenticate(res);
-          setAuth(true);
-        }
-      })
-      .catch((e) => setToast(translate(user.language, "CatchError")));
+    //     if (res.errors) {
+    //       setToast(Object.values(res.errors)[0]);
+    //       return;
+    //     }
+    //     if (res.api_token) {
+    //       setAuth(true);
+    //       authenticate(res);
+    //       setAuth(true);
+    //     }
+    //   })
+    //   .catch((e) => setToast(translate(user.language, "CatchError")));
   };
   if (auth) return <Redirect to="/" />;
   return (

@@ -5,6 +5,7 @@ import Home from "./Home";
 import { Loader } from "./RootLoader";
 import { initUser } from '../actions'
 import Login from "./Login";
+import firebase from 'firebase';
 
 // interface IComponents {
 //   [key: string]: any;
@@ -50,28 +51,33 @@ class HOComponent extends React.Component<IProps, IState> {
     this.props.loading();
   }
   componentDidMount() {
-    fetch(`http://127.0.0.1:8000/api/token?token=${getCookie("token")}`)
-      .then((res) => res.json())
-      .then((data) => {
+    try {
+      firebase.auth().currentUser!.getIdToken().then(res => {
         setTimeout(() => {
           this.props.breakLoader();
         }, 1000);
-
-        if (data && data.api_token) {
-          this.props.setToken(data.api_token);
-          this.props.initUser(data)
-        }
       })
-      .catch((e) => {
-        this.props.breakLoader();
-      });
+    } catch(error) {
+      this.setState({ logout: true });
+    }
+    
+    // fetch(`http://127.0.0.1:8000/api/token?token=${getCookie("token")}`)
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     setTimeout(() => {
+    //       this.props.breakLoader();
+    //     }, 1000);
+
+    //     if (data && data.api_token) {
+    //       this.props.setToken(data.api_token);
+    //       this.props.initUser(data)
+    //     }
+    //   })
+    //   .catch((e) => {
+    //     this.props.breakLoader();
+    //   });
   }
   componentWillUnmount() {
-    console.log("some");
-  }
-  logout() {
-    this.setState({ logout: true });
-    this.props.logout();
   }
 }
 

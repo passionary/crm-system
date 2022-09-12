@@ -2,8 +2,14 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { connect } from "react-redux";
 import { translate } from "../filters/translate";
+import { useParams } from "react-router-dom";
 
-const DetailRecord = ({ record, user }: any) => {
+const DetailRecord = ({ records, user }: any) => {
+  const { id } = useParams() as any;
+  const record = records.find((r: any) => r.id == id);
+  console.log(id, record, records, 'DETAIL RECORD');
+  
+
   return (
     <div>
       <div className="breadcrumb-wrap">
@@ -29,7 +35,7 @@ const DetailRecord = ({ record, user }: any) => {
               </p>
               <p>
                 {translate(user.language, "Category")}:{" "}
-                {record.category && record.category.name}
+                {record.categoryTitle}
               </p>
 
               <small>
@@ -48,6 +54,6 @@ const DetailRecord = ({ record, user }: any) => {
 };
 
 export default connect(
-  (state: any) => ({ user: state.user }),
+  (state: any) => ({ ...state }),
   null
 )(DetailRecord);

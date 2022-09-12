@@ -3,11 +3,12 @@ import { connect } from "react-redux";
 import { getCurrencySymbol } from "../utils/getCurrencySymbol";
 import { translate } from "../filters/translate";
 
-const Bill = ({ rates, date, bill, user }: any) => {  
-
-  const base = (bill: any) => bill / (rates!["KZT"] / rates!["EUR"]);
+const Bill = ({ rates, date, bill, user }: any) => {
+  const base = (bill: any) => {
+    return bill / (rates!["KZT"] / rates!["EUR"]);
+  };
   const getCurrency = (base: any, currency: string) => {
-    return Math.floor(base * rates[currency]);
+    return base * rates[currency];
   };
 
   return (
@@ -33,7 +34,7 @@ const Bill = ({ rates, date, bill, user }: any) => {
                     <p className="currency-line" key={index}>
                       <span>
                         {getCurrencySymbol(
-                          getCurrency(base(bill.bill), rate),
+                          getCurrency(base(bill), rate),
                           rate
                         )}
                       </span>
@@ -80,6 +81,6 @@ const Bill = ({ rates, date, bill, user }: any) => {
 };
 
 export default connect(
-  (state: any) => ({ bill: state.bill, user: state.user }),
+  (state: any) => ({ ...state }),
   null
 )(Bill);

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import { translate } from "../filters/translate";
 import { setToast } from "../actions";
+import firebase from "firebase";
 
 const Categories = ({
   categories,
@@ -10,46 +11,77 @@ const Categories = ({
   user,
   setToast,
 }: any) => {
+  console.log(categories, 'CATEGORIES');
+  const uid = firebase.auth().currentUser!.uid;
+  const titleRef = useRef<HTMLInputElement>(null);
+  const limitRef = useRef<HTMLInputElement>(null);
+  const editTitleRef = useRef<HTMLInputElement>(null);
+  const editLimitRef = useRef<HTMLInputElement>(null);
+  const categoryRef = useRef<HTMLSelectElement>(null);
   setTimeout(() => {
     M.FormSelect.init(document.querySelector("#category-list") as any);
   }, 0);
-  const createSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const createSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const form = document.getElementById("create");
-    fetch("http://127.0.0.1:8000/api/create-category", {
-      method: "POST",
-      body: new FormData(form as any),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.errors) {
-          setToast(Object.values(res.errors)[0]);
-          return;
-        }
-        setToast(translate(user.language, "Category_HasBeenCreated"));
-        createCategory(res);
-      })
-      .catch((e) => setToast(translate(user.language, "CatchError")));
+    try {
+      const title = titleRef.current!.value;
+      const limit = limitRef.current!.value;
+      const category = await firebase.database().ref(`users/${uid}/categories`).push({
+        title,
+        limit,
+      });
+      setToast(translate(user.language, "Category_HasBeenCreated"));
+      createCategory({
+        title,
+        limit,
+        id: category.key,
+      });
+      // const form = document.getElementById("create");
+      // fetch("http://127.0.0.1:8000/api/create-category", {
+      //   method: "POST",
+      //   body: new FormData(form as any),
+      // })
+      //   .then((res) => res.json())
+      //   .then((res) => {
+      //     if (res.errors) {
+      //       setToast(Object.values(res.errors)[0]);
+      //       return;
+      //     }
+      
+      //   })
+      //   .catch((e) => ));
+    } catch(error) {
+      setToast(translate(user.language, "CatchError"));
+    }
   };
-  const editSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const editSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const form = document.getElementById("edit");
-    fetch("http://127.0.0.1:8000/api/edit-category", {
-      method: "POST",
-      body: new FormData(form as any),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.errors) {
-          setToast(Object.values(res.errors)[0]);
-          return;
-        }
-        setToast(translate(user.language, "Category_HasBeenUpdated"));
-        editCategory(res);
-      })
-      .catch((e) => setToast(translate(user.language, "CatchError")));
+    const curCategory = categoryRef.current!.children[
+      categoryRef.current!.selectedIndex
+    ] as any;
+    console.log(curCategory, 'CUR CATEGORY');
+    
+
+    await firebase.database().ref(`users/${uid}/categories/${curCategory.id}`).update({
+      title: editTitleRef.current!.value,
+      limit: editLimitRef.current!.value,
+    });
+    // const form = document.getElementById("edit");
+    // fetch("http://127.0.0.1:8000/api/edit-category", {
+    //   method: "POST",
+    //   body: new FormData(form as any),
+    // })
+    //   .then((res) => res.json())
+    //   .then((res) => {
+    //     if (res.errors) {
+    //       setToast(Object.values(res.errors)[0]);
+    //       return;
+    //     }
+    //     setToast(translate(user.language, "Category_HasBeenUpdated"));
+    //     editCategory(res);
+    //   })
+    //   .catch((e) => setToast(translate(user.language, "CatchError")));
   };
   return (
     <>
@@ -66,7 +98,7 @@ const Categories = ({
 
               <form onSubmit={createSubmitHandler} id="create">
                 <div className="input-field">
-                  <input name="name" id="name" type="text" />
+                  <input ref={titleRef} name="name" id="name" type="text" />
                   <label htmlFor="name">
                     {translate(user.language, "Title")}
                   </label>
@@ -81,7 +113,7 @@ const Categories = ({
                   value={user && user.id}
                 />
                 <div className="input-field">
-                  <input name="limit" id="limit" type="number" />
+                  <input ref={limitRef} name="limit" id="limit" type="number" />
                   <label htmlFor="limit">
                     {translate(user.language, "Limit")}
                   </label>
@@ -105,12 +137,12 @@ const Categories = ({
 
               <form onSubmit={editSubmitHandler} id="edit">
                 <div className="input-field">
-                  <select name="id" id="category-list">
+                  <select ref={categoryRef} name="id" id="category-list">
                     {categories &&
                       categories.length &&
                       categories.map((cat: any, index: number) => (
-                        <option key={index} value={cat.id}>
-                          {cat.name}
+                        <option id={cat.id} key={index} value={cat.id}>
+                          {cat.title}
                         </option>
                       ))}
                   </select>
@@ -122,7 +154,7 @@ const Categories = ({
                   value={user && user.id}
                 />
                 <div className="input-field">
-                  <input name="name" type="text" id="name" />
+                  <input ref={editTitleRef} name="title" type="text" id="name" />
                   <label htmlFor="name">
                     {translate(user.language, "Title")}
                   </label>
@@ -132,7 +164,7 @@ const Categories = ({
                 </div>
 
                 <div className="input-field">
-                  <input name="limit" id="limit" type="number" />
+                  <input ref={editLimitRef} name="limit" id="limit" type="number" />
                   <label htmlFor="limit">
                     {translate(user.language, "Limit")}
                   </label>

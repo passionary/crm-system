@@ -19,3 +19,9 @@ export const initUser = (user: any) => {
     payload: user,
   };
 };
+export const setInfo = (payload: any) => {
+  return {
+    type: "set-info",
+    payload,
+  };
+};

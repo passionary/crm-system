@@ -32,7 +32,6 @@ const Login = ({ authenticate, setToast, user }: any) => {
     const form = document.querySelector("#form");
 
     if (!form) return;
-    console.log(email.current!.value, password.current!.value);
     
     try {
       await firebase.auth().signInWithEmailAndPassword(email.current!.value, password.current!.value);
